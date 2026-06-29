@@ -1,0 +1,2970 @@
+[index.html](https://github.com/user-attachments/files/29474678/index.html)
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Star by Penny nails | 仙女專屬美甲預約系統</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome 圖標 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bgMain: '#DFE6FA',     // 大面積背景色 (仙氣粉藍)
+            accentLight: '#F9DADA', // 小面積色 (溫柔粉色)
+            themeMain: '#B0C0E4',   // 其餘色系 (優雅藍)
+            themeDark: '#7C93C3',   // 稍微深一點的藍
+            roseGold: '#D29184',    // 玫瑰金主要色
+            roseGoldLight: '#E8B3A9'
+          },
+          fontFamily: {
+            serif: ["Playfair Display", "Noto Serif TC", "Georgia", "serif"]
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Firebase SDK (compat 版，支援直接在 HTML 使用) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDO--lOBJmFJ7TOxLkKfISWhaxwHQU8xxM",
+      authDomain: "star-by-penny.firebaseapp.com",
+      projectId: "star-by-penny",
+      storageBucket: "star-by-penny.firebasestorage.app",
+      messagingSenderId: "1026254259016",
+      appId: "1:1026254259016:web:500de341590f0a5cf5697d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    window._db = firebase.firestore();
+    window._firebaseReady = true;
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Alex+Brush&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Serif TC', 'Playfair Display', serif;
+      background-color: #DFE6FA;
+      color: #334155;
+    }
+    
+    /* 隱藏滾動條但保持功能 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* 仙女飄逸動畫 */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1deg); }
+    }
+    .float-anim {
+      animation: float 4s ease-in-out infinite;
+    }
+    
+    /* 漸顯效果 */
+    .fade-in {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 玫瑰金漸變字體與背景 */
+    .text-rosegold {
+      background: linear-gradient(135deg, #ECC7C1 0%, #D59F96 50%, #C3867B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .bg-rosegold-gradient {
+      background: linear-gradient(135deg, #ECC7C1 0%, #D59F96 50%, #C3867B 100%);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- ================= 向量 SVG Logo 模板 (重現 7DDCB7C8-B694-43AF-9CBA-6F4A65A3FB49_CocoAI_20260629_003803_1.jpeg) ================= -->
+  <template id="logo-template">
+    <svg viewBox="0 0 400 240" class="w-full h-auto max-w-[320px] mx-auto select-none">
+      <defs>
+        <!-- 玫瑰金金屬光澤漸變 -->
+        <linearGradient id="roseGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ECC7C1" />
+          <stop offset="25%" stop-color="#E4B2A8" />
+          <stop offset="50%" stop-color="#D59F96" />
+          <stop offset="75%" stop-color="#C3867B" />
+          <stop offset="100%" stop-color="#A5675C" />
+        </linearGradient>
+      </defs>
+      <!-- 主視覺弧線星軌 -->
+      <path d="M 80 145 C 50 115, 110 50, 270 70 C 285 71, 305 76, 315 82" fill="none" stroke="url(#roseGoldGrad)" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M 115 178 C 90 160, 115 110, 195 105" fill="none" stroke="url(#roseGoldGrad)" stroke-width="1" stroke-dasharray="2 3" opacity="0.8" />
+      
+      <!-- 星辰裝飾 (中間大星與周圍閃爍小星) -->
+      <path d="M 285 45 L 288 65 L 308 68 L 288 71 L 285 91 L 282 71 L 262 68 L 282 65 Z" fill="url(#roseGoldGrad)" />
+      <path d="M 285 53 L 286.5 66.5 L 300 68 L 286.5 69.5 L 285 83 L 283.5 69.5 L 270 68 L 283.5 66.5 Z" fill="#FFF" opacity="0.7" />
+      
+      <!-- 四周分佈的小八角星 -->
+      <path d="M 115 105 L 116.5 111 L 122.5 112.5 L 116.5 114 L 115 120 L 113.5 114 L 107.5 112.5 L 113.5 111 Z" fill="url(#roseGoldGrad)" transform="scale(0.8) translate(50, 10)" />
+      <path d="M 240 40 L 241 44 L 245 45 L 241 46 L 240 50 L 239 46 L 235 45 L 239 44 Z" fill="url(#roseGoldGrad)" />
+      <path d="M 275 80 L 276 83 L 279 84 L 276 85 L 275 88 L 274 85 L 271 84 L 274 83 Z" fill="url(#roseGoldGrad)" />
+      <path d="M 320 95 L 321 98 L 324 99 L 321 100 L 320 103 L 319 100 L 316 99 L 319 98 Z" fill="url(#roseGoldGrad)" />
+
+      <!-- 文字：Star (Serif優雅字體) -->
+      <text x="195" y="125" font-family="'Playfair Display', 'Georgia', serif" font-weight="700" font-size="78" fill="url(#roseGoldGrad)" text-anchor="middle" letter-spacing="1">Star</text>
+      
+      <!-- 文字：by Penny (流暢草寫) -->
+      <text x="200" y="165" font-family="'Pinyon Script', 'Alex Brush', cursive" font-size="38" fill="url(#roseGoldGrad)" text-anchor="middle" letter-spacing="0.5">by Penny</text>
+      
+      <!-- 底部 NAIL STUDIO 線條與字樣 -->
+      <line x1="120" y1="188" x2="160" y2="188" stroke="url(#roseGoldGrad)" stroke-width="0.8" />
+      <text x="200" y="192" font-family="'Playfair Display', sans-serif" font-weight="600" font-size="11" fill="url(#roseGoldGrad)" text-anchor="middle" letter-spacing="4">NAIL STUDIO</text>
+      <line x1="240" y1="188" x2="280" y2="188" stroke="url(#roseGoldGrad)" stroke-width="0.8" />
+    </svg>
+  </template>
+
+  <!-- ================= 導覽列 ================= -->
+  <nav class="sticky top-0 z-50 bg-[#DFE6FA]/90 backdrop-blur-md border-b border-[#B0C0E4]/30 shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="switchTab('home')">
+          <div class="w-12 h-12 flex items-center justify-center">
+            <svg viewBox="0 0 400 240" class="w-full h-full">
+              <use href="#roseGoldLogoPath" />
+            </svg>
+          </div>
+          <h1 class="text-lg sm:text-xl font-semibold tracking-wider text-slate-700 flex flex-col">
+            <span class="font-serif italic text-themeDark leading-none">Star</span>
+            <span class="text-[10px] font-light text-slate-500 tracking-normal mt-0.5">by Penny nails</span>
+          </h1>
+        </div>
+
+        <!-- 桌面端選單 -->
+        <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+          <button onclick="switchTab('home')" class="nav-link text-slate-700 hover:text-themeDark pb-1 border-b-2 border-transparent transition-all">首頁</button>
+          <button onclick="switchTab('notice')" class="nav-link text-slate-700 hover:text-themeDark pb-1 border-b-2 border-transparent transition-all">預約須知</button>
+          <button onclick="switchTab('menu')" class="nav-link text-slate-700 hover:text-themeDark pb-1 border-b-2 border-transparent transition-all">價目表</button>
+          <button onclick="switchTab('promotions')" class="nav-link text-slate-700 hover:text-themeDark pb-1 border-b-2 border-transparent transition-all">優惠活動</button>
+          <button onclick="switchTab('booking')" class="text-white hover:opacity-95 transition-all flex items-center gap-2 bg-gradient-to-r from-themeDark to-roseGold px-5 py-2 rounded-full shadow-sm font-semibold text-xs tracking-widest hover:scale-105 duration-200">
+            <i class="fa-solid fa-calendar-check text-xs"></i> 我要預約
+          </button>
+        </div>
+
+        <!-- 行動端選單按鈕 -->
+        <div class="md:hidden flex items-center gap-3">
+          <button onclick="switchTab('booking')" class="text-white text-xs bg-gradient-to-r from-themeDark to-roseGold px-3.5 py-1.5 rounded-full font-bold shadow-sm hover:scale-105 transition-all">
+            <i class="fa-solid fa-calendar-check"></i> 我要預約
+          </button>
+          <button id="mobile-menu-btn" class="text-slate-700 focus:outline-none text-xl p-1">
+            <i class="fa-solid fa-bars" id="menu-icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 行動端選單內容 -->
+    <div id="mobile-menu" class="hidden md:hidden bg-[#DFE6FA]/95 border-b border-[#B0C0E4]/30 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+      <button onclick="switchTab('home')" class="block w-full text-left py-2 px-3 rounded-lg text-slate-700 hover:bg-[#F9DADA]/50">首頁 Home</button>
+      <button onclick="switchTab('notice')" class="block w-full text-left py-2 px-3 rounded-lg text-slate-700 hover:bg-[#F9DADA]/50">預約須知 Notice</button>
+      <button onclick="switchTab('menu')" class="block w-full text-left py-2 px-3 rounded-lg text-slate-700 hover:bg-[#F9DADA]/50">服務價目 Menu</button>
+      <button onclick="switchTab('promotions')" class="block w-full text-left py-2 px-3 rounded-lg text-slate-700 hover:bg-[#F9DADA]/50">優惠活動 Events</button>
+      <button onclick="switchTab('booking')" class="block w-full text-left py-2 px-3 rounded-lg text-slate-700 hover:bg-[#F9DADA]/50 font-bold text-themeDark">我要預約 Reserve</button>
+    </div>
+  </nav>
+
+  <!-- ================= 主要內容區 ================= -->
+  <main class="flex-grow">
+    
+    <!-- 1. 首頁 (Home Tab) -->
+    <section id="tab-home" class="tab-content">
+      <!-- Hero 橫幅 -->
+      <div class="relative overflow-hidden py-12 md:py-20 px-4">
+        <!-- 裝飾背景球 -->
+        <div class="absolute top-10 left-10 w-48 h-48 rounded-full bg-[#F9DADA]/60 blur-3xl -z-10"></div>
+        <div class="absolute bottom-10 right-10 w-72 h-72 rounded-full bg-[#B0C0E4]/40 blur-3xl -z-10"></div>
+
+        <div class="max-w-5xl mx-auto text-center flex flex-col items-center">
+          <!-- 玫瑰金渲染大 Logo -->
+          <div class="w-full max-w-[280px] sm:max-w-[340px] mb-4 float-anim" id="hero-logo-container">
+            <!-- 由 JS 自動渲染 SVG -->
+          </div>
+          
+          <h2 id="home-hero-title-display" class="text-3xl md:text-5xl lg:text-6xl font-light text-slate-800 tracking-wider mb-6 font-serif leading-tight">
+            <!-- 載入動態首頁大標 -->
+          </h2>
+          <p id="home-hero-subtitle-display" class="text-sm md:text-base text-slate-600 max-w-xl mx-auto leading-relaxed mb-8 font-light">
+            <!-- 載入動態首頁副標 -->
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-4 w-full max-w-md">
+            <button onclick="switchTab('booking')" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-[#B0C0E4] to-themeDark hover:from-themeDark hover:to-[#B0C0E4] text-white font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-300 tracking-widest text-sm">
+              立即預約指尖魔法
+            </button>
+            <a id="home-ig-btn" href="#" target="_blank" class="w-full sm:w-auto px-8 py-3.5 bg-white/80 hover:bg-[#F9DADA] border border-[#B0C0E4]/50 text-slate-700 font-medium rounded-full shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center gap-2 text-sm">
+              <i class="fa-brands fa-instagram text-lg text-pink-600"></i> 追蹤 Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 精選美甲作品展示區 (動態 CMS 作品集) -->
+      <div class="max-w-7xl mx-auto px-4 py-12 border-t border-[#B0C0E4]/30">
+        <div class="text-center mb-10">
+          <h3 class="text-2xl font-light text-slate-800 tracking-widest font-serif">Salon Gallery</h3>
+          <p class="text-xs text-slate-500 mt-2">點擊作品即可於 Instagram 與 Penny 進行設計討論</p>
+        </div>
+
+        <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- 由 JS 智慧動態渲染 (支持網址與 SVG 備用) -->
+        </div>
+
+        <!-- 工作室店面資訊 & 交通地圖卡片 (重現 IMG_9548.jpeg 中的地標與地址資訊) -->
+        <div id="studio-info-card-container" class="mt-12 bg-white/70 border border-[#B0C0E4]/40 rounded-3xl p-6 md:p-8 max-w-3xl mx-auto shadow-sm">
+          <!-- 由 JS 動態渲染工作室地址、捷運等，可由後台自由修改 -->
+        </div>
+
+        <!-- IG導流 -->
+        <div class="mt-12 bg-white/50 border border-[#B0C0E4]/40 rounded-2xl p-6 md:p-8 text-center max-w-2xl mx-auto">
+          <i class="fa-brands fa-instagram text-3xl text-slate-700 mb-3 float-anim"></i>
+          <h4 class="text-lg font-medium text-slate-800">在 Instagram 上關注我們</h4>
+          <p class="text-sm text-slate-600 mt-2 mb-4 font-light">
+            我們會定期更新美甲日常、仙女客照分享以及突發的「空檔即時預約時段」！
+          </p>
+          <a id="home-ig-username" href="#" target="_blank" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-full font-medium transition-all text-sm shadow-sm">
+            <!-- 動態IG -->
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 預約須知 (Notice Tab) -->
+    <section id="tab-notice" class="tab-content hidden max-w-4xl mx-auto px-4 py-12 fade-in">
+      <div class="text-center mb-10">
+        <span class="text-themeDark font-serif italic text-lg block mb-1">Booking Policy</span>
+        <h2 class="text-3xl font-light tracking-widest text-slate-800 font-serif">預約須知</h2>
+        <div class="w-16 h-[2px] bg-[#B0C0E4] mx-auto mt-4"></div>
+      </div>
+
+      <div class="bg-white/80 rounded-3xl p-6 md:p-10 shadow-sm border border-[#B0C0E4]/30 space-y-8">
+        <!-- 動態渲染的核心條款與須知 -->
+        <div id="notice-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- JS 渲染 -->
+        </div>
+
+        <div class="text-center pt-4">
+          <button onclick="switchTab('booking')" class="px-8 py-3 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-full transition-all text-sm font-semibold tracking-wider shadow-sm">
+            已詳細閱讀，前往預約
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 價目表 (Menu Tab) -->
+    <section id="tab-menu" class="tab-content hidden max-w-5xl mx-auto px-4 py-12 fade-in">
+      <div class="text-center mb-10">
+        <span class="text-themeDark font-serif italic text-lg block mb-1">Service Menu</span>
+        <h2 class="text-3xl font-light tracking-widest text-slate-800 font-serif">服務價目表</h2>
+        <p class="text-xs text-slate-500 mt-2">※ 服務皆採精緻預約制 | 專業手藝，呵護您的雙手</p>
+        <div class="w-16 h-[2px] bg-[#B0C0E4] mx-auto mt-4"></div>
+      </div>
+
+      <!-- 重現 IMG_9545.jpeg 的精美雙欄價目表 (由 JS 動態載入並開放後台修改) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- 經典凝膠系列 -->
+        <div class="bg-white/80 rounded-3xl p-6 md:p-8 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-xl font-medium text-slate-800 border-b border-[#B0C0E4]/40 pb-3 mb-6 font-serif flex items-center justify-between">
+            <span>Gel Nails 凝膠款式</span>
+            <span class="text-xs bg-[#F9DADA] px-2 py-1 rounded-md text-slate-700 font-semibold">精緻加固建構</span>
+          </h3>
+          <div id="menu-gel-container" class="space-y-4">
+            <!-- JS 載入 -->
+          </div>
+        </div>
+
+        <!-- 卸甲及附加項目 -->
+        <div class="bg-white/80 rounded-3xl p-6 md:p-8 border border-[#B0C0E4]/30 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-xl font-medium text-slate-800 border-b border-[#B0C0E4]/40 pb-3 mb-6 font-serif flex items-center justify-between">
+              <span>Removal & Addons 卸延甲項目</span>
+              <span class="text-xs bg-[#DFE6FA] px-2 py-1 rounded-md text-slate-700 font-semibold">溫和健康保養</span>
+            </h3>
+            <div id="menu-remove-container" class="space-y-4">
+              <!-- JS 載入 -->
+            </div>
+          </div>
+          
+          <div class="mt-8 bg-[#F9DADA]/30 rounded-2xl p-4 border border-white text-xs text-slate-600 leading-relaxed font-light">
+            <span class="font-bold text-slate-700 block mb-1"><i class="fa-solid fa-wand-sparkles text-themeDark mr-1"></i> Penny 的手藝堅持</span>
+            本店所有凝膠服務，均包含「指緣極致修整前保養」與「強韌防斷裂建構」厚度加固，讓甲型飽滿透光，不接急單，預約請預留充足施作時間唷。
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <button onclick="switchTab('booking')" class="px-8 py-3.5 bg-gradient-to-r from-themeDark to-roseGold text-white hover:opacity-90 font-medium rounded-full shadow-md tracking-wider text-sm transition-all">
+          選取指尖設計款式，立即預約
+        </button>
+      </div>
+    </section>
+
+    <!-- 4. 優惠活動 (Promotions Tab) -->
+    <section id="tab-promotions" class="tab-content hidden max-w-5xl mx-auto px-4 py-12 fade-in">
+      <div class="text-center mb-10">
+        <span class="text-themeDark font-serif italic text-lg block mb-1">Special Offers</span>
+        <h2 class="text-3xl font-light tracking-widest text-slate-800 font-serif">專屬仙女優惠牆</h2>
+        <div class="w-16 h-[2px] bg-[#B0C0E4] mx-auto mt-4"></div>
+      </div>
+
+      <div id="promotions-list-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- JS 渲染 -->
+      </div>
+    </section>
+
+    <!-- 5. 我要預約 (Booking Tab) -->
+    <section id="tab-booking" class="tab-content hidden max-w-3xl mx-auto px-4 py-12 fade-in">
+      <div class="text-center mb-10">
+        <span class="text-themeDark font-serif italic text-lg block mb-1">Nail Studio Booking</span>
+        <h2 class="text-3xl font-light tracking-widest text-slate-800 font-serif">我要預約</h2>
+        <div class="w-16 h-[2px] bg-[#B0C0E4] mx-auto mt-4"></div>
+      </div>
+
+      <!-- 預約表單卡片 -->
+      <div class="bg-white/95 rounded-3xl p-6 md:p-10 border border-[#B0C0E4]/40 shadow-md">
+        <form id="booking-form" onsubmit="handleFormSubmit(event)" class="space-y-6">
+          <!-- 姓名 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-solid fa-user-tag text-xs text-themeDark"></i> 仙女大名 <span class="text-rose-500">*</span></label>
+            <input type="text" id="book-name" required placeholder="例如：Penny" class="w-full px-4 py-3 bg-[#DFE6FA]/20 border border-[#B0C0E4]/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] transition-all text-sm">
+          </div>
+
+          <!-- 電話 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-solid fa-phone text-xs text-themeDark"></i> 聯絡電話 <span class="text-rose-500">*</span></label>
+            <input type="tel" id="book-phone" required placeholder="例如：0912345678" class="w-full px-4 py-3 bg-[#DFE6FA]/20 border border-[#B0C0E4]/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] transition-all text-sm">
+          </div>
+
+          <!-- 施作項目 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-solid fa-wand-sparkles text-xs text-themeDark"></i> 預約主要美甲項目 <span class="text-rose-500">*</span></label>
+            <select id="book-service" required class="w-full px-4 py-3 bg-[#DFE6FA]/20 border border-[#B0C0E4]/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] transition-all text-slate-700 text-sm">
+              <!-- JS 動態載入價目表中的選項 -->
+            </select>
+          </div>
+
+          <!-- 卸甲加選項目複選區 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-solid fa-hand text-xs text-themeDark"></i> 是否需要卸甲或加值服務 (多選)</label>
+            <div id="booking-addons-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <!-- JS 自動載入所有的加值卸延甲 checkboxes 與指選框 -->
+            </div>
+          </div>
+
+          <!-- 預約時間選擇 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-solid fa-calendar-check text-xs text-themeDark"></i> 選擇可預約時段 <span class="text-rose-500">*</span></label>
+            <div id="time-slots-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-64 overflow-y-auto p-1.5 border border-[#B0C0E4]/30 rounded-xl bg-slate-50 no-scrollbar">
+              <!-- JS 動態渲染開放月份班表 -->
+            </div>
+            <p class="text-xs text-slate-400 mt-2"><i class="fa-solid fa-circle-info mr-1"></i> 若當日無可選時段代表已被預訂完畢，歡迎直接 LINE 預約候補或預定其他月份班表。</p>
+          </div>
+
+          <!-- 備註 -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2"><i class="fa-regular fa-comment-dots text-xs text-themeDark"></i> 備註需求說明</label>
+            <textarea id="book-notes" placeholder="若您對造型顏色、特殊指甲問題或有特殊手繪想法，請寫在這邊告訴 Penny..." rows="3" class="w-full px-4 py-3 bg-[#DFE6FA]/20 border border-[#B0C0E4]/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] transition-all text-sm"></textarea>
+          </div>
+
+          <!-- 同意條約 -->
+          <div class="flex items-start">
+            <input type="checkbox" id="book-agree" required class="mt-1 mr-3 accent-themeDark">
+            <label for="book-agree" class="text-xs text-slate-500 leading-relaxed cursor-pointer select-none">
+              我已詳閱且同意 <button type="button" onclick="switchTab('notice')" class="text-themeDark font-semibold underline">「預約須知」</button> 中的工作室規定，承諾預約時間遲到不超過 10 分鐘，不攜伴、攜物等守則。
+            </label>
+          </div>
+
+          <!-- 送出預約 -->
+          <div class="pt-2">
+            <button type="submit" class="w-full py-4 bg-gradient-to-r from-themeDark to-roseGold text-white font-semibold rounded-full shadow-md hover:shadow-lg hover:scale-[1.01] transition-all tracking-widest flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> 送出預約、並生成 Instagram 預約訊息
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= 管理員後台頁面 ================= -->
+    <section id="admin-panel" class="hidden max-w-6xl mx-auto px-4 py-12 fade-in">
+      <div class="flex flex-col sm:flex-row items-center justify-between border-b border-[#B0C0E4]/40 pb-6 mb-8 gap-4">
+        <div>
+          <h2 class="text-3xl font-light text-slate-800 font-serif flex items-center gap-2">
+            <i class="fa-solid fa-screwdriver-wrench text-themeDark"></i> Penny 內容與預約管理後台
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">您可以在此處編輯前台的文案、價目表、優惠活動，以及檢視仙女預約的名單和班表空檔。</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="showPasswordChangePrompt()" class="px-4 py-2 bg-white hover:bg-[#F9DADA] border border-slate-200 text-slate-600 rounded-full text-xs font-semibold transition-all shadow-sm">
+            <i class="fa-solid fa-key"></i> 修改後台密碼
+          </button>
+          <button onclick="exitAdminPanel()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-full text-xs font-semibold transition-all shadow-sm">
+            登出後台
+          </button>
+        </div>
+      </div>
+
+      <!-- 後台子導覽頁籤 -->
+      <div class="flex flex-wrap gap-2 mb-8 text-xs font-medium">
+        <button id="admin-sub-btn-appointments" onclick="switchAdminSubTab('appointments')" class="px-4 py-2 bg-[#B0C0E4] text-slate-800 rounded-full font-semibold transition-all">
+          <i class="fa-solid fa-clipboard-list mr-1"></i> 預約審核明細
+        </button>
+        <button id="admin-sub-btn-slots" onclick="switchAdminSubTab('slots')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-solid fa-calendar-day mr-1"></i> 班表時段管理
+        </button>
+        <button id="admin-sub-btn-gallery" onclick="switchAdminSubTab('gallery')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-regular fa-image mr-1"></i> 作品集照片 (CMS)
+        </button>
+        <button id="admin-sub-btn-services" onclick="switchAdminSubTab('services')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-solid fa-tags mr-1"></i> 款式價目管理 (CMS)
+        </button>
+        <button id="admin-sub-btn-promotions" onclick="switchAdminSubTab('promotions')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-solid fa-gift mr-1"></i> 優惠活動管理 (CMS)
+        </button>
+        <button id="admin-sub-btn-notices" onclick="switchAdminSubTab('notices')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-solid fa-circle-info mr-1"></i> 預約須知編輯 (CMS)
+        </button>
+        <button id="admin-sub-btn-home-studio" onclick="switchAdminSubTab('home-studio')" class="px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all">
+          <i class="fa-solid fa-house-chimney mr-1"></i> 首頁與工作室自訂 (CMS)
+        </button>
+      </div>
+
+      <!-- 後台子頁：預約審核明細 -->
+      <div id="admin-sub-appointments" class="admin-sub-content space-y-4">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-4 gap-2">
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">仙女預約紀錄表</h3>
+              <p class="text-xs text-slate-500">前台點擊「提交預約」後所自動建立的清單，可用作日常班表登記和提醒備份。</p>
+            </div>
+            <button onclick="clearAllAppointments()" class="px-3 py-1 bg-rose-50 text-rose-500 hover:bg-rose-100 rounded text-xs transition-all">
+              <i class="fa-solid fa-trash-can mr-1"></i> 清空全部預約明細
+            </button>
+          </div>
+
+          <!-- 篩選列 -->
+          <div class="flex gap-2 mb-4 text-xs font-semibold">
+            <button id="filter-all" onclick="filterAppointments('all')" class="px-3 py-1.5 bg-[#B0C0E4] text-slate-800 rounded-lg">全部</button>
+            <button id="filter-pending" onclick="filterAppointments('pending')" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg">等待審核</button>
+            <button id="filter-confirmed" onclick="filterAppointments('confirmed')" class="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg">預約已確認</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 border-b border-slate-100">
+                  <th class="p-3">姓名與聯絡電話</th>
+                  <th class="p-3">預約時間</th>
+                  <th class="p-3">預約主項目與加選</th>
+                  <th class="p-3">狀態</th>
+                  <th class="p-3 text-right">管理操作</th>
+                </tr>
+              </thead>
+              <tbody id="admin-appointments-tbody">
+                <!-- JS 載入 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：時段管理 -->
+      <div id="admin-sub-slots" class="admin-sub-content hidden space-y-6">
+
+        <!-- 月份開放總覽卡 -->
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calendar-days text-themeDark mr-2"></i>月份班表開放控制</h3>
+              <p class="text-xs text-slate-500 mt-1">開啟的月份，客人才能看見並預約；關閉後客人無法看到，但時段資料仍保留。</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="month" id="new-month-input" class="px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white" value="2026-08">
+              <button onclick="addMonthPanel()" class="px-4 py-2 bg-gradient-to-r from-themeDark to-roseGold text-white rounded-full text-xs font-semibold shadow-sm hover:opacity-90 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-plus mr-1"></i> 新增月份
+              </button>
+            </div>
+          </div>
+          <div id="month-panels-container" class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <!-- JS 渲染月份卡片 -->
+          </div>
+        </div>
+
+        <!-- 時段編輯區 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm space-y-4">
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">新增時段至月份</h3>
+              <p class="text-[11px] text-slate-400 mt-0.5">先選月份再填時段</p>
+            </div>
+            <div class="space-y-3 bg-[#DFE6FA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">選擇編輯月份</label>
+                <select id="admin-slot-month-select" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white font-bold" onchange="onAdminMonthChange(this.value)">
+                  <!-- JS 渲染 -->
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">預約日期</label>
+                <input type="date" id="new-slot-date" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">時段選擇 (如 11:00)</label>
+                <input type="text" id="new-slot-time" placeholder="例如：11:00" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+              </div>
+              <button onclick="addNewTimeSlot()" class="w-full py-2 bg-themeDark hover:opacity-95 text-white rounded-lg text-xs font-semibold transition-all">
+                確認上架此時段
+              </button>
+            </div>
+
+            <h3 class="text-lg font-bold text-slate-800 pt-2">一鍵批次常用排班</h3>
+            <div class="space-y-3 bg-[#F9DADA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">選擇日期</label>
+                <input type="date" id="batch-slot-date" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+              </div>
+              <p class="text-[10px] text-slate-500 leading-relaxed">將自動為該日期上架 11:00、14:00、17:00 與 20:00 四個常用預約空檔。</p>
+              <button onclick="batchGenerateSlots()" class="w-full py-2 bg-roseGold text-white rounded-lg text-xs font-semibold transition-all shadow-sm">
+                批次產生四個時段
+              </button>
+            </div>
+          </div>
+
+          <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm flex flex-col">
+            <div>
+              <div class="flex flex-wrap justify-between items-center pb-3 border-b border-slate-100 gap-2">
+                <h3 class="text-lg font-bold text-slate-800">
+                  <span id="admin-slots-month-label">目前班表已開放時段</span>
+                </h3>
+                <button onclick="clearAllUnbookedSlots()" class="text-xs text-rose-500 hover:underline">一鍵清除目前月份未預約時段</button>
+              </div>
+              <div class="max-h-[420px] overflow-y-auto no-scrollbar mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2" id="admin-slots-list">
+                <!-- JS 載入 -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：作品集照片管理 (CMS) -->
+      <div id="admin-sub-gallery" class="admin-sub-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm space-y-4">
+          <h3 id="gallery-form-title" class="text-lg font-bold text-slate-800">修改作品集照片</h3>
+          <p class="text-xs text-slate-400">選擇並自訂首頁的作品欄位</p>
+          
+          <div class="space-y-3 bg-[#DFE6FA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30 text-xs">
+            <div>
+              <label class="block text-slate-500 mb-1">修改哪個作品位置？</label>
+              <select id="gallery-edit-target" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg bg-white" onchange="loadGalleryForm()">
+                <option value="g1">位置 1 (最左邊)</option>
+                <option value="g2">位置 2</option>
+                <option value="g3">位置 3</option>
+                <option value="g4">位置 4 (最右邊)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-500 mb-1">作品標題 (例如：極致璀璨貓眼)</label>
+              <input type="text" id="gallery-title" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg bg-white">
+            </div>
+            <div>
+              <label class="block text-slate-500 mb-1">簡短介紹 (例如：手繪極致鏡面線條)</label>
+              <input type="text" id="gallery-desc" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg bg-white">
+            </div>
+            <div>
+              <label class="block text-slate-500 mb-1">作品分類/標籤 (例如：熱門、仙女款、氣質)</label>
+              <input type="text" id="gallery-tag" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg bg-white">
+            </div>
+            <div>
+              <label class="block text-slate-600 font-bold mb-1">直接上傳美甲照片 <span class="text-rose-500">*</span></label>
+              <div class="flex flex-col gap-2">
+                <!-- 自訂美觀上傳按鈕 -->
+                <label class="flex flex-col items-center justify-center border-2 border-dashed border-[#B0C0E4] rounded-xl p-4 bg-white hover:bg-[#F9DADA]/20 cursor-pointer transition-all">
+                  <i class="fa-solid fa-cloud-arrow-up text-xl text-[#7C93C3] mb-1"></i>
+                  <span class="text-[11px] text-slate-600 font-medium" id="upload-status-text">點擊選擇照片或拖曳至此</span>
+                  <input type="file" id="gallery-file-input" accept="image/*" class="hidden" onchange="handleImageUpload(this)">
+                </label>
+                <!-- 隱藏隱密儲存 Base64 的欄位 -->
+                <input type="hidden" id="gallery-url">
+                <!-- 圖片上傳後的即時預覽區 -->
+                <div id="upload-preview-container" class="hidden w-20 h-20 rounded-lg overflow-hidden border border-[#B0C0E4] mt-1 relative">
+                  <img id="upload-preview-img" src="" class="w-full h-full object-cover">
+                  <button onclick="removeUploadedImage()" class="absolute top-0 right-0 bg-rose-500 text-white rounded-bl-lg p-1 text-[10px]" type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1.5 leading-relaxed">
+                <i class="fa-solid fa-circle-info text-themeDark mr-1"></i><b>說明</b>：系統會自動為您壓縮照片。不需任何外連網址或複雜圖床，直接挑選您手機裡精美的作品照即可，簡單又省心！
+              </p>
+            </div>
+            <button onclick="saveGalleryItem()" class="w-full py-2.5 bg-gradient-to-r from-themeDark to-roseGold text-white rounded-lg font-semibold shadow-sm mt-2">
+              更新此位置相片
+            </button>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">當前首頁作品集一覽</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4" id="admin-gallery-preview">
+            <!-- JS 動態載入作品集縮圖 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：款式價目管理 (CMS) -->
+      <div id="admin-sub-services" class="admin-sub-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm space-y-4">
+          <h3 id="service-form-title" class="text-lg font-bold text-slate-800">新增美甲款式/服務</h3>
+          
+          <div class="space-y-3 bg-[#DFE6FA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">分類類別</label>
+              <select id="service-category" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+                <option value="gel">經典美甲款式 (Gel)</option>
+                <option value="remove">卸甲與延甲 (Removal/Addons)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">款式/項目名稱</label>
+              <input type="text" id="service-title" placeholder="例如：晶瑩璀璨貓眼" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">價格 (NT$) (若輸入 0 則顯示為 傳圖報價)</label>
+              <input type="number" id="service-price" placeholder="例如：900" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">簡短介紹</label>
+              <input type="text" id="service-desc" placeholder="例如：精細磁粉折射光芒" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            
+            <div id="service-action-buttons" class="space-y-2 pt-2">
+              <button onclick="saveServiceItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+                確認保存款式
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">當前價目項目列表</h3>
+          <p class="text-[10px] text-slate-400 mt-1">※ 修改後，前台價目表及仙女預約時下拉選單將會自動更新同步。</p>
+          <div class="max-h-[380px] overflow-y-auto no-scrollbar mt-4 space-y-2">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500">
+                  <th class="p-2.5">分類</th>
+                  <th class="p-2.5">項目名稱</th>
+                  <th class="p-2.5">價格</th>
+                  <th class="p-2.5">簡介</th>
+                  <th class="p-2.5 text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody id="admin-services-tbody">
+                <!-- JS 載入 -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：優惠活動管理 -->
+      <div id="admin-sub-promotions" class="admin-sub-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm space-y-4">
+          <h3 id="promo-form-title" class="text-lg font-bold text-slate-800">新增優惠活動</h3>
+          
+          <div class="space-y-3 bg-[#DFE6FA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">活動標籤 (如: 慶開幕 或 壽星禮)</label>
+              <input type="text" id="promo-tag" placeholder="例如：慶開幕" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">活動主標題</label>
+              <input type="text" id="promo-title" placeholder="例如：首簽到享現折 100 優惠" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">活動描述內容 (支援HTML標籤)</label>
+              <textarea id="promo-desc" rows="4" placeholder="例如：第一次施作美甲即可享現場折扣..." class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">底部小字備註</label>
+              <input type="text" id="promo-footer" placeholder="例如：* 每人限使用乙次" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            
+            <div id="promo-action-buttons" class="space-y-2 pt-2">
+              <button onclick="savePromoItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+                上架此優惠活動
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">當前活動列表</h3>
+          <div class="max-h-[380px] overflow-y-auto no-scrollbar mt-4 space-y-3" id="admin-promos-list">
+            <!-- JS 載入 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：預約須知編輯 -->
+      <div id="admin-sub-notices" class="admin-sub-content hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm space-y-4">
+          <h3 id="notice-form-title" class="text-lg font-bold text-slate-800">新增/修改須知條款</h3>
+          
+          <div class="space-y-3 bg-[#DFE6FA]/40 p-4 rounded-2xl border border-[#B0C0E4]/30">
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">條款標題 (如: 更改與取消)</label>
+              <input type="text" id="notice-title-input" placeholder="例如：預約保留時間" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-500 mb-1">條款內容描寫 (支援HTML標籤)</label>
+              <textarea id="notice-desc-input" rows="5" placeholder="例如：預約僅保留10分鐘，逾時自動取消..." class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none bg-white"></textarea>
+            </div>
+            
+            <div id="notice-action-buttons" class="space-y-2 pt-2">
+              <button onclick="saveNoticeItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+                確認保存條款
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">前台預約須知明細</h3>
+          <div class="max-h-[380px] overflow-y-auto no-scrollbar mt-4 space-y-3" id="admin-notices-list">
+            <!-- JS 載入 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 後台子頁：首頁與工作室地標文案 -->
+      <div id="admin-sub-home-studio" class="admin-sub-content hidden space-y-6">
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">首頁大主視覺及 IG 連結自訂</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">首頁大標題文字 (Hero Title)</label>
+              <input type="text" id="config-hero-title" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">首頁副標題介紹 (Hero Subtitle)</label>
+              <textarea id="config-hero-subtitle" rows="2" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">Instagram 官方連結</label>
+              <input type="url" id="config-ig-url" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">Instagram 顯示名稱</label>
+              <input type="text" id="config-ig-text" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">工作室資訊地標自訂 (重現大安區工作室)</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">工作室標題</label>
+              <input type="text" id="config-studio-title" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">捷運交通導引文字</label>
+              <input type="text" id="config-studio-mrt" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs text-slate-600 font-bold mb-1">工作室詳細地址</label>
+              <input type="text" id="config-studio-address" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs text-slate-600 font-bold mb-1">Google 地圖導航連結</label>
+              <input type="url" id="config-studio-map" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-slate-100 mt-6 flex justify-end">
+            <button onclick="saveGlobalConfigs()" class="px-6 py-2.5 bg-gradient-to-r from-themeDark to-roseGold text-white rounded-full text-xs font-semibold shadow-sm hover:scale-105 transition-all">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> 儲存所有首頁與店鋪自訂設定
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= 預約成功確認 Modal (引導至 Instagram) ================= -->
+  <div id="success-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-[#B0C0E4]/50 transform transition-all scale-100 fade-in">
+      <div class="text-center">
+        <!-- 成功大 Logo -->
+        <div class="w-full max-w-[200px] mb-2" id="success-logo-container">
+          <!-- 由 JS 自動渲染 SVG -->
+        </div>
+        <h3 class="text-xl font-bold text-slate-800 font-serif mt-2">您的美甲預約單已生成</h3>
+        <p class="text-xs text-slate-500 mt-1">請完成下方簡單步驟，即刻傳送給 Penny 完成登記！</p>
+      </div>
+
+      <!-- 預約單明細小卡 -->
+      <div class="my-5 p-4 bg-[#DFE6FA]/40 rounded-2xl text-xs text-slate-700 space-y-2.5 border border-[#B0C0E4]/30">
+        <div class="flex justify-between"><span class="text-slate-400">仙女姓名:</span> <span id="summary-name" class="font-semibold text-slate-800"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">聯絡電話:</span> <span id="summary-phone" class="font-semibold text-slate-800"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">預約主要項目:</span> <span id="summary-service" class="font-bold text-rose-500"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">加選與卸延甲:</span> <span id="summary-addons" class="font-medium text-slate-800"></span></div>
+        <div class="flex justify-between"><span class="text-slate-400">預約時間:</span> <span id="summary-time" class="font-bold text-slate-800 font-serif"></span></div>
+        <div class="flex justify-between border-t border-slate-200/60 pt-2 mt-2"><span class="text-slate-400">備註留言:</span> <span id="summary-notes" class="italic text-slate-500">無</span></div>
+      </div>
+
+      <!-- 操作說明 -->
+      <div class="space-y-2.5">
+        <div class="p-3 bg-[#F9DADA]/50 rounded-xl text-[11px] text-slate-600 flex items-start gap-2 leading-relaxed">
+          <i class="fa-solid fa-wand-magic-sparkles text-themeDark mt-0.5 shrink-0"></i>
+          <span>請先點選【一鍵複製預約文字】，然後點選【前往 Instagram】將內容貼上私訊（小盒子）給 Penny 唷！</span>
+        </div>
+        
+        <!-- 一鍵複製文字框 (隱藏用來複製) -->
+        <textarea id="copy-textarea" class="absolute pointer-events-none opacity-0"></textarea>
+
+        <button onclick="copyBookingDetails()" class="w-full py-3 bg-white border border-[#B0C0E4] hover:bg-[#F9DADA]/30 text-slate-800 text-xs font-semibold rounded-full transition-all flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-regular fa-copy"></i> <span id="copy-btn-text">一鍵複製預約文字</span>
+        </button>
+
+        <a id="modal-ig-link" href="#" target="_blank" onclick="closeSuccessModal()" class="w-full py-3 bg-gradient-to-r from-purple-600 via-pink-500 to-roseGold text-white text-xs font-bold rounded-full transition-all flex items-center justify-center gap-2 shadow-sm">
+          <i class="fa-brands fa-instagram text-base"></i> 前往 Instagram (私訊貼上)
+        </a>
+        
+        <button onclick="closeSuccessModal()" class="w-full py-1.5 text-[10px] text-slate-400 hover:text-slate-600 transition-all text-center block">
+          返回系統首頁
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 管理員密碼驗證 Modal ================= -->
+  <div id="admin-auth-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#B0C0E4]/50">
+      <div class="text-center mb-5">
+        <div class="w-12 h-12 rounded-full bg-[#DFE6FA] flex items-center justify-center mx-auto mb-2 text-xl text-slate-600">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">後台安全驗證</h3>
+        <p class="text-xs text-slate-400 mt-1">請輸入專屬後台管理員登入密碼</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <input type="password" id="admin-password" placeholder="請輸入密碼" class="w-full px-4 py-3 bg-[#DFE6FA]/20 border border-[#B0C0E4]/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] text-center text-xs">
+          <p id="auth-error-msg" class="hidden text-rose-500 text-xs mt-2 text-center"></p>
+        </div>
+
+        <div class="flex gap-2">
+          <button onclick="closeAdminModal()" class="w-1/2 py-2.5 border border-slate-200 text-slate-500 text-xs font-medium rounded-full hover:bg-slate-50 transition-all">
+            取消
+          </button>
+          <button onclick="verifyAdminPassword()" class="w-1/2 py-2.5 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white text-xs font-medium rounded-full transition-all shadow-sm">
+            驗證登入
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 客製化安全替代 Confirm / Alert 的 Modal ================= -->
+  <div id="custom-confirm-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/55 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#B0C0E4]/50 transform transition-all scale-100">
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mx-auto mb-3 text-rose-500 text-xl">
+          <i id="confirm-icon" class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h4 id="confirm-title" class="text-base font-bold text-slate-800">系統提示訊息</h4>
+        <p id="confirm-message" class="text-xs text-slate-500 mt-2 leading-relaxed px-2"></p>
+      </div>
+      <div class="flex gap-2 mt-5">
+        <button id="confirm-cancel-btn" class="w-1/2 py-2.5 border border-slate-200 text-slate-500 text-xs font-medium rounded-full hover:bg-slate-50 transition-all">
+          取消
+        </button>
+        <button id="confirm-ok-btn" class="w-1/2 py-2.5 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white text-xs font-medium rounded-full transition-all shadow-sm">
+          確定
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 更改密碼對話框 ================= -->
+  <div id="password-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#B0C0E4]/50">
+      <div class="text-center mb-4">
+        <div class="w-12 h-12 rounded-full bg-[#F9DADA] flex items-center justify-center mx-auto mb-2 text-roseGold text-lg">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-800">變更後台密碼</h3>
+        <p class="text-[11px] text-slate-400 mt-1">請設定您的新管理登入密碼</p>
+      </div>
+      <div class="space-y-4">
+        <input type="password" id="new-password-input" placeholder="請輸入4位以上新密碼" class="w-full px-4 py-2.5 bg-slate-50 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0C0E4] text-center text-xs">
+        <div class="flex gap-2">
+          <button onclick="closePasswordModal()" class="w-1/2 py-2 border border-slate-200 text-slate-500 text-xs font-semibold rounded-full hover:bg-slate-50">
+            取消
+          </button>
+          <button onclick="saveNewPassword()" class="w-1/2 py-2 bg-[#B0C0E4] text-slate-800 hover:text-white text-xs font-semibold rounded-full shadow-sm">
+            確認儲存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 編輯客人預約資料 Modal ================= -->
+  <div id="admin-edit-app-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#B0C0E4]/50 transform transition-all scale-100 fade-in">
+      <div class="text-center mb-4">
+        <div class="w-12 h-12 rounded-full bg-[#DFE6FA] flex items-center justify-center mx-auto mb-2 text-[#7C93C3] text-lg">
+          <i class="fa-regular fa-calendar-minus"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-800 font-serif">修改仙女預約內容</h3>
+        <p class="text-[11px] text-slate-400 mt-1">您可以在此直接幫客人調整預約時間與細節</p>
+      </div>
+      <div class="space-y-3.5 text-xs text-left">
+        <input type="hidden" id="edit-app-id">
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">仙女姓名</label>
+          <input type="text" id="edit-app-name" class="w-full px-3 py-2 bg-[#DFE6FA]/20 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4]">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">聯絡電話</label>
+          <input type="text" id="edit-app-phone" class="w-full px-3 py-2 bg-[#DFE6FA]/20 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4]">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">選擇新時段 (僅列出您班表剩下的未預訂空檔) <span class="text-rose-500">*</span></label>
+          <select id="edit-app-time-slot" class="w-full px-3 py-2 bg-slate-50 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4] font-bold text-slate-700">
+            <!-- JS 動態安全載入 -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">預約主要項目</label>
+          <select id="edit-app-service" class="w-full px-3 py-2 bg-slate-50 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4]">
+            <!-- JS 動態載入 -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">卸甲與附加項目說明</label>
+          <input type="text" id="edit-app-remove" class="w-full px-3 py-2 bg-[#DFE6FA]/20 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4]">
+        </div>
+        <div>
+          <label class="block text-slate-500 mb-1 font-semibold">備註留言</label>
+          <textarea id="edit-app-notes" rows="2" class="w-full px-3 py-2 bg-[#DFE6FA]/20 border border-[#B0C0E4]/50 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#B0C0E4]"></textarea>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <button onclick="closeEditAppModal()" class="w-1/2 py-2.5 border border-slate-200 text-slate-500 font-semibold rounded-full hover:bg-slate-50 transition-all">
+            取消
+          </button>
+          <button onclick="saveEditedAppointment()" class="w-1/2 py-2.5 bg-gradient-to-r from-themeDark to-roseGold text-white font-semibold rounded-full shadow-sm hover:opacity-95 transition-all">
+            儲存修改
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 頁尾 ================= -->
+  <footer class="bg-[#DFE6FA] border-t border-[#B0C0E4]/30 pt-14 pb-8 px-4 mt-16 text-center">
+    <div class="max-w-2xl mx-auto space-y-5">
+
+      <!-- Logo -->
+      <div class="flex flex-col items-center gap-0.5">
+        <span class="italic leading-none text-[#7C93C3]" style="font-family:'Playfair Display',Georgia,serif; font-size:2rem;">Star</span>
+        <span class="font-light text-slate-500 tracking-[0.22em]" style="font-family:'Playfair Display',Georgia,serif; font-size:11px;">by Penny nails</span>
+      </div>
+
+      <!-- 介紹文字 -->
+      <p class="text-[13px] text-slate-500 font-light leading-relaxed">
+        大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。
+      </p>
+
+      <!-- IG + 捷運 -->
+      <div class="flex justify-center items-center gap-5 text-[13px] text-slate-600 flex-wrap">
+        <a id="footer-ig-btn" href="#" target="_blank" class="flex items-center gap-1.5 hover:text-pink-500 transition-colors">
+          <i class="fa-brands fa-instagram text-[15px] text-slate-500"></i>
+          <span class="font-light">Instagram</span>
+        </a>
+        <span class="text-[#B0C0E4]">|</span>
+        <span id="footer-mrt-display" class="font-light flex items-center gap-1.5 text-slate-600"></span>
+      </div>
+
+      <!-- 星形分隔 -->
+      <div class="flex items-center justify-center gap-3 py-1">
+        <div class="w-10 h-px" style="background:#C3867B; opacity:0.3;"></div>
+        <i class="fa-regular fa-star text-[11px]" style="color:#C3867B; opacity:0.6;"></i>
+        <div class="w-10 h-px" style="background:#C3867B; opacity:0.3;"></div>
+      </div>
+
+      <!-- 版權 + 後台按鈕 -->
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 text-[11px] text-slate-400">
+        <span>&copy; 2026 Star by Penny nails. All rights reserved.</span>
+        <button onclick="openAdminModal()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#B0C0E4]/50 bg-white/70 text-slate-500 hover:text-slate-700 hover:bg-white transition-all text-[11px] shadow-sm">
+          <i class="fa-solid fa-lock text-[9px]"></i> 管理員後台
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= 客製化訊息提示 ================= -->
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-slate-800/95 text-white text-xs sm:text-sm px-6 py-3 rounded-full shadow-xl flex items-center gap-2 transition-all duration-300">
+    <span id="toast-text">提示內容</span>
+  </div>
+
+  <!-- ================= 主要 JavaScript 邏輯 ================= -->
+  <script>
+    // 7 月份開放預約班表 (重現自 IMG_9540.png 實際發佈日期時段)
+    const DEFAULT_SLOTS = [
+      { id: 's0701_1', date: '2026-07-01', time: '11:00', booked: false },
+      { id: 's0701_2', date: '2026-07-01', time: '13:00', booked: false },
+      { id: 's0702_1', date: '2026-07-02', time: '11:00', booked: false },
+      { id: 's0702_2', date: '2026-07-02', time: '14:00', booked: false },
+      { id: 's0702_3', date: '2026-07-02', time: '17:00', booked: false },
+      { id: 's0702_4', date: '2026-07-02', time: '20:00', booked: false },
+      { id: 's0703_1', date: '2026-07-03', time: '11:00', booked: false },
+      { id: 's0703_2', date: '2026-07-03', time: '14:00', booked: false },
+      { id: 's0704_1', date: '2026-07-04', time: '11:00', booked: false },
+      { id: 's0704_2', date: '2026-07-04', time: '13:00', booked: false },
+      { id: 's0705_1', date: '2026-07-05', time: '11:00', booked: false },
+      { id: 's0705_2', date: '2026-07-05', time: '13:00', booked: false },
+      { id: 's0706_1', date: '2026-07-06', time: '11:00', booked: false },
+      { id: 's0706_2', date: '2026-07-06', time: '14:00', booked: false },
+      { id: 's0706_3', date: '2026-07-06', time: '17:00', booked: false },
+      { id: 's0706_4', date: '2026-07-06', time: '20:00', booked: false },
+      { id: 's0707_1', date: '2026-07-07', time: '11:00', booked: false },
+      { id: 's0707_2', date: '2026-07-07', time: '13:00', booked: false },
+      { id: 's0708_1', date: '2026-07-08', time: '11:00', booked: false },
+      { id: 's0708_2', date: '2026-07-08', time: '13:00', booked: false },
+      { id: 's0712_1', date: '2026-07-12', time: '11:00', booked: false },
+      { id: 's0712_2', date: '2026-07-12', time: '13:00', booked: false },
+      { id: 's0713_1', date: '2026-07-13', time: '11:00', booked: false },
+      { id: 's0713_2', date: '2026-07-13', time: '14:00', booked: false },
+      { id: 's0713_3', date: '2026-07-13', time: '17:00', booked: false },
+      { id: 's0713_4', date: '2026-07-13', time: '20:00', booked: false },
+      { id: 's0714_1', date: '2026-07-14', time: '11:00', booked: false },
+      { id: 's0714_2', date: '2026-07-14', time: '13:00', booked: false },
+      { id: 's0715_1', date: '2026-07-15', time: '11:00', booked: false },
+      { id: 's0715_2', date: '2026-07-15', time: '13:00', booked: false },
+      { id: 's0716_1', date: '2026-07-16', time: '11:00', booked: false },
+      { id: 's0716_2', date: '2026-07-16', time: '14:00', booked: false },
+      { id: 's0716_3', date: '2026-07-16', time: '17:00', booked: false },
+      { id: 's0716_4', date: '2026-07-16', time: '20:00', booked: false },
+      { id: 's0717_1', date: '2026-07-17', time: '11:00', booked: false },
+      { id: 's0717_2', date: '2026-07-17', time: '14:00', booked: false },
+      { id: 's0717_3', date: '2026-07-17', time: '17:00', booked: false },
+      { id: 's0717_4', date: '2026-07-17', time: '20:00', booked: false },
+      { id: 's0718_1', date: '2026-07-18', time: '11:00', booked: false },
+      { id: 's0718_2', date: '2026-07-18', time: '13:00', booked: false },
+      { id: 's0719_1', date: '2026-07-19', time: '11:00', booked: false },
+      { id: 's0719_2', date: '2026-07-19', time: '13:00', booked: false },
+      { id: 's0720_1', date: '2026-07-20', time: '11:00', booked: false },
+      { id: 's0720_2', date: '2026-07-20', time: '14:00', booked: false },
+      { id: 's0720_3', date: '2026-07-20', time: '17:00', booked: false },
+      { id: 's0720_4', date: '2026-07-20', time: '20:00', booked: false },
+      { id: 's0721_1', date: '2026-07-21', time: '11:00', booked: false },
+      { id: 's0721_2', date: '2026-07-21', time: '13:00', booked: false },
+      { id: 's0722_1', date: '2026-07-22', time: '11:00', booked: false },
+      { id: 's0722_2', date: '2026-07-22', time: '13:00', booked: false },
+      { id: 's0723_1', date: '2026-07-23', time: '11:00', booked: false },
+      { id: 's0723_2', date: '2026-07-23', time: '14:00', booked: false },
+      { id: 's0723_3', date: '2026-07-23', time: '17:00', booked: false },
+      { id: 's0723_4', date: '2026-07-23', time: '20:00', booked: false },
+      { id: 's0724_1', date: '2026-07-24', time: '11:00', booked: false },
+      { id: 's0724_2', date: '2026-07-24', time: '14:00', booked: false },
+      { id: 's0724_3', date: '2026-07-24', time: '17:00', booked: false },
+      { id: 's0724_4', date: '2026-07-24', time: '20:00', booked: false },
+      { id: 's0725_1', date: '2026-07-25', time: '11:00', booked: false },
+      { id: 's0725_2', date: '2026-07-25', time: '13:00', booked: false },
+      { id: 's0726_1', date: '2026-07-26', time: '11:00', booked: false },
+      { id: 's0726_2', date: '2026-07-26', time: '13:00', booked: false },
+      { id: 's0727_1', date: '2026-07-27', time: '11:00', booked: false },
+      { id: 's0727_2', date: '2026-07-27', time: '14:00', booked: false },
+      { id: 's0727_3', date: '2026-07-27', time: '17:00', booked: false },
+      { id: 's0727_4', date: '2026-07-27', time: '20:00', booked: false },
+      { id: 's0728_1', date: '2026-07-28', time: '11:00', booked: false },
+      { id: 's0728_2', date: '2026-07-28', time: '13:00', booked: false },
+      { id: 's0729_1', date: '2026-07-29', time: '11:00', booked: false },
+      { id: 's0729_2', date: '2026-07-29', time: '13:00', booked: false },
+      { id: 's0730_1', date: '2026-07-30', time: '11:00', booked: false },
+      { id: 's0730_2', date: '2026-07-30', time: '14:00', booked: false },
+      { id: 's0730_3', date: '2026-07-30', time: '17:00', booked: false },
+      { id: 's0730_4', date: '2026-07-30', time: '20:00', booked: false },
+      { id: 's0731_1', date: '2026-07-31', time: '11:00', booked: false },
+      { id: 's0731_2', date: '2026-07-31', time: '14:00', booked: false },
+      { id: 's0731_3', date: '2026-07-31', time: '17:00', booked: false },
+      { id: 's0731_4', date: '2026-07-31', time: '20:00', booked: false }
+    ];
+
+    // 美甲服務項目預設資料庫 (重現自 IMG_9545.jpeg)
+    const DEFAULT_SERVICES = [
+      { id: 'ser_1', category: 'gel', title: '單色', desc: '極致純色，通透水潤感', price: 800 },
+      { id: 'ser_2', category: 'gel', title: '貓眼', desc: '超細膩磁粉，展現璀璨星河效果', price: 900 },
+      { id: 'ser_3', category: 'gel', title: '鏡面', desc: '高級金屬極光質感', price: 1000 },
+      { id: 'ser_4', category: 'gel', title: '法式', desc: '精細手繪線條，極致優雅氣質', price: 1100 },
+      { id: 'ser_5', category: 'gel', title: '漸層', desc: '指尖自然暈染，細柔透亮', price: 1000 },
+      { id: 'ser_6', category: 'remove', title: '本店卸甲續作', desc: '不傷真甲溫和安全卸除', price: 200 },
+      { id: 'ser_7', category: 'remove', title: '他店卸甲續作', desc: '專業機器與手動細節配合卸除', price: 300 },
+      { id: 'ser_8', category: 'remove', title: '本店純卸甲 (含保養)', desc: '指緣精緻修護，附強韌健甲修護', price: 500 },
+      { id: 'ser_9', category: 'remove', title: '他店純卸甲 (含保養)', desc: '含專業他店凝膠卸除與手部細緻保養', price: 600 },
+      { id: 'ser_10', category: 'remove', title: '甲片延甲 一指', desc: '修飾短甲與斷甲、延長比例', price: 80 },
+      { id: 'ser_11', category: 'gel', title: '客製化造型款式', desc: '可先提供圖片，與 Penny 進行設計與細節討論', price: 0 }
+    ];
+
+    // 預設作品集資料 (CMS 支援連結，若為空即套用手繪線條)
+    const DEFAULT_GALLERY = [
+      { id: 'g1', url: '', title: '冰透星空貓眼系列', desc: '晶瑩璀璨貓眼款式', tag: '超人氣', tagColor: 'rose' },
+      { id: 'g2', url: '', title: '微醺腮紅玫瑰暈染', desc: '手繪極致鏡面線條', tag: '高雅', tagColor: 'indigo' },
+      { id: 'g3', url: '', title: '法式經典指尖', desc: '氣質法式經典', tag: '氣質', tagColor: 'amber' },
+      { id: 'g4', url: '', title: '鏡面水波立體蝴蝶結', desc: '透光手繪漸層', tag: '溫柔', tagColor: 'purple' }
+    ];
+
+    // 優惠活動預設資料庫 (重現自 IMG_9548.jpeg 與前次)
+    const DEFAULT_PROMOTIONS = [
+      { id: 'p_1', tag: '5/22 慶開幕', title: '開幕限定優惠', desc: '凡在開幕慶活動期間前來預約：<br>美甲不限款式享 85 折優惠！<br><span class="text-rose-500 font-medium">（此折扣項目不包含純卸甲）</span>', footer: '* 讓每個指尖都閃耀如星' },
+      { id: 'p_2', tag: '首次簽到', title: 'New Guest 新仙女首簽到', desc: '第一次光臨 Star by Penny nails 施作的仙女：<br>即可享有現場折抵 $100 優惠！<br>（不限款式與卸甲項目，僅限續作）', footer: '* 每個帳號 / 每人限使用乙次。' },
+      { id: 'p_3', tag: '分享回饋', title: 'IG 仙女拍照標記分享禮', desc: '施作完成後在現場為指甲拍照，上傳 IG 限時動態標記 <span class="font-bold text-pink-600">@star.bypenny_nails</span>：<br>下回施作即可免費贈送「指緣蜜蠟滋養保養」** (價值 $300)！', footer: '* 限下回預約施作時兌換，需主動出示 IG 截圖。' }
+    ];
+
+    // 預約須知條款預設資料庫
+    const DEFAULT_NOTICES = [
+      { id: 'n_1', title: '預約保留時間', desc: '預約僅保留 <span class="font-bold text-rose-500">10 分鐘</span>。因後面皆有排定客時，逾時未到且未主動聯絡者，系統將自動取消該預約並視為棄單。' },
+      { id: 'n_2', title: '更改與取消', desc: '若需變更或取消預約，請務必於預約時間 <span class="font-bold text-rose-500">前 2 天</span> 告知我們，讓有需要候補的仙女可以排入。' },
+      { id: 'n_3', title: '攜伴限制', desc: '為維護施作環境品質與操作空間安全，工作室空間較精緻，<span class="font-bold text-slate-700">禁止攜帶寵物與男伴</span>，感謝仙女們的貼心與體諒。' },
+      { id: 'n_4', title: '指甲健康狀態', desc: '若指甲有灰指甲、嚴重霉菌感染、傷口發炎等特殊病变狀況，恕無法施作，建議優先尋求專業皮膚科醫生治療喔！' }
+    ];
+
+    // 店面資訊與地標預設資料庫 (重現自 IMG_9548.jpeg)
+    const DEFAULT_STUDIO_INFO = {
+      title: 'Star by Penny 美甲工作室資訊',
+      mrt: '捷運國父紀念館站 2 號出口，步行只需 7 分鐘',
+      address: '臺北市大安區仁愛路四段425號4樓',
+      mapUrl: 'https://maps.google.com/?q=臺北市大安區仁愛路四段425號4樓'
+    };
+
+    // 首頁大文案自訂預設資料庫
+    const DEFAULT_HOME_CONFIG = {
+      heroTitle: '讓每個指尖都閃耀如星辰',
+      heroSubtitle: '位於大安區的精緻美甲殿堂。精心施作極致前保養、透光凝膠、與溫柔持久的高質感美甲設計。',
+      igUrl: 'https://www.instagram.com/star.bypenny_nails?igsh=MXdpejZsYWl1YTV4OA==',
+      igText: '@star.bypenny_nails'
+    };
+
+    // 預設測試客人預約名單
+    const DEFAULT_APPOINTMENTS = [];
+
+    // --- 系統狀態 ---
+    let slots = DEFAULT_SLOTS;
+    let appointments = DEFAULT_APPOINTMENTS;
+    let services = DEFAULT_SERVICES;
+    let promotions = DEFAULT_PROMOTIONS;
+    let notices = DEFAULT_NOTICES;
+    let studioInfo = DEFAULT_STUDIO_INFO;
+    let homeConfig = DEFAULT_HOME_CONFIG;
+    let gallery = DEFAULT_GALLERY;
+    let adminPassword = 'penny0521';
+    let openMonths = ['2026-07'];
+    let adminSlotMonth = '2026-07';
+    let currentFilter = 'all';
+    let currentAdminSubTab = 'appointments';
+    let editingServiceId = null;
+    let editingPromoId = null;
+    let editingNoticeId = null;
+
+    // Firebase 儲存
+    async function saveData() {
+      if (!window._db) return;
+      try {
+        await window._db.collection('config').doc('main').set({
+          slots, appointments, services, promotions,
+          notices, studioInfo, homeConfig, gallery,
+          adminPassword, openMonths
+        });
+      } catch(e) {
+        console.error('Firebase 儲存失敗:', e);
+        showToast('儲存失敗，請確認網路連線');
+      }
+    }
+
+    // Firebase 讀取
+    async function loadData() {
+      if (!window._db) return;
+      try {
+        const snap = await window._db.collection('config').doc('main').get();
+        if (snap.exists) {
+          const d = snap.data();
+          slots        = d.slots        || DEFAULT_SLOTS;
+          appointments = d.appointments || DEFAULT_APPOINTMENTS;
+          services     = d.services     || DEFAULT_SERVICES;
+          promotions   = d.promotions   || DEFAULT_PROMOTIONS;
+          notices      = d.notices      || DEFAULT_NOTICES;
+          studioInfo   = d.studioInfo   || DEFAULT_STUDIO_INFO;
+          homeConfig   = d.homeConfig   || DEFAULT_HOME_CONFIG;
+          gallery      = d.gallery      || DEFAULT_GALLERY;
+          adminPassword = d.adminPassword || 'penny0521';
+          openMonths   = d.openMonths   || ['2026-07'];
+        } else {
+          await saveData();
+        }
+        if (!services.some(s => s.id === 'ser_11' || s.title === '客製化造型款式')) {
+          services.push({ id: 'ser_11', category: 'gel', title: '客製化造型款式', desc: '可先提供圖片，與 Penny 進行設計與細節討論', price: 0 });
+        }
+      } catch(e) {
+        console.error('Firebase 讀取失敗:', e);
+      }
+    }
+
+    // 網頁載入初始化
+    window.onload = function() {
+      injectLogos();
+      // 等 Firebase 準備好再載入資料
+      if (window._firebaseReady) {
+        initApp();
+      } else {
+        window.addEventListener('firebase-ready', initApp);
+      }
+    };
+
+    async function initApp() {
+      // 顯示載入中
+      document.body.style.opacity = '0.6';
+      await loadData();
+      document.body.style.opacity = '1';
+      renderFrontEndAll();
+      renderAdminAll();
+      document.getElementById('new-slot-date').value = adminSlotMonth + '-01';
+      document.getElementById('batch-slot-date').value = adminSlotMonth + '-01';
+    }
+
+    // 玫瑰金 Logo 注入器
+    function injectLogos() {
+      const template = document.getElementById('logo-template').innerHTML;
+      const heroContainer = document.getElementById('hero-logo-container');
+      if (heroContainer) heroContainer.innerHTML = template;
+      const successContainer = document.getElementById('success-logo-container');
+      if (successContainer) successContainer.innerHTML = template;
+    }
+
+    // ================= 前台動態渲染 =================
+    function renderFrontEndAll() {
+      renderFrontEndHomeAndStudio();
+      renderFrontEndGallery();
+      renderFrontEndNotices();
+      renderFrontEndMenu();
+      renderFrontEndPromotions();
+      renderBookingFormSelects();
+      renderClientSlots();
+    }
+
+    // 1. 首頁文案 & 地標資訊
+    function renderFrontEndHomeAndStudio() {
+      // 首頁主文案
+      document.getElementById('home-hero-title-display').textContent = homeConfig.heroTitle;
+      document.getElementById('home-hero-subtitle-display').textContent = homeConfig.heroSubtitle;
+      
+      const igBtn = document.getElementById('home-ig-btn');
+      igBtn.href = homeConfig.igUrl;
+      
+      const igUsername = document.getElementById('home-ig-username');
+      igUsername.href = homeConfig.igUrl;
+      igUsername.innerHTML = `${homeConfig.igText} <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>`;
+
+      // 頁尾
+      document.getElementById('footer-ig-btn').href = homeConfig.igUrl;
+      document.getElementById('footer-mrt-display').innerHTML = `<i class="fa-solid fa-train text-slate-400 text-[13px]"></i> ${studioInfo.mrt}`;
+
+      // 店面地址地標卡片
+      const card = document.getElementById('studio-info-card-container');
+      card.innerHTML = `
+        <div class="flex flex-col md:flex-row items-center gap-6">
+          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-[#F9DADA] rounded-full flex items-center justify-center text-slate-700 text-2xl shrink-0 float-anim">
+            <i class="fa-solid fa-map-location-dot text-roseGold"></i>
+          </div>
+          <div class="flex-grow text-center md:text-left space-y-2">
+            <span class="text-xs font-bold text-roseGold tracking-widest block font-serif">— STUDIO INFO —</span>
+            <h4 class="text-lg font-bold text-slate-800">${studioInfo.title}</h4>
+            <p class="text-xs sm:text-sm text-slate-600 font-light leading-relaxed">
+              <i class="fa-solid fa-train text-themeDark mr-1"></i> <strong>${studioInfo.mrt}</strong>
+            </p>
+            <p class="text-xs sm:text-sm text-slate-600 font-light">
+              <i class="fa-solid fa-location-dot text-rose-400 mr-1.5"></i> <strong>地址：</strong>${studioInfo.address}
+            </p>
+          </div>
+          <div class="shrink-0 w-full md:w-auto">
+            <a href="${studioInfo.mapUrl}" target="_blank" class="block text-center px-6 py-2.5 bg-white border border-[#B0C0E4] hover:bg-[#F9DADA]/50 text-slate-700 font-semibold rounded-full text-xs transition-all shadow-sm">
+              開啟 Google 地圖 <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- 前台作品集動態渲染 (智慧防斷圖備份機制) ---
+    function renderFrontEndGallery() {
+      const container = document.getElementById('gallery-container');
+      container.innerHTML = '';
+
+      gallery.forEach(item => {
+        const hasUrl = item.url && item.url.trim().length > 0;
+        
+        // 渲染每個作品卡片
+        const card = document.createElement('div');
+        card.className = "bg-white/80 rounded-2xl p-3 shadow-sm hover:shadow-md transition-all group";
+        
+        let tagColorClasses = "text-rose-400 bg-rose-50";
+
+        card.innerHTML = `
+          <div class="relative overflow-hidden rounded-xl aspect-square bg-[#B0C0E4]/20 flex items-center justify-center">
+            
+            <!-- 真實照片標籤 (若有網址即渲染) -->
+            ${hasUrl ? `
+              <img id="img-${item.id}" src="${item.url}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onerror="handleImageLoadError('${item.id}')">
+            ` : ''}
+
+            <!-- 備用線條 SVG (當沒有圖片網址或載入失敗時智慧顯示) -->
+            <div id="fallback-${item.id}" class="${hasUrl ? 'hidden' : ''} w-full h-full flex items-center justify-center">
+              <svg viewBox="0 0 200 200" class="w-full h-full object-cover">
+                <defs>
+                  <linearGradient id="g-grad-${item.id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#DFE6FA;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#F9DADA;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#B0C0E4;stop-opacity:1" />
+                  </linearGradient>
+                </defs>
+                <rect width="200" height="200" fill="url(#g-grad-${item.id})" />
+                <path d="M100,50 Q120,90 100,160 Q80,90 100,50" fill="#ffffff" opacity="0.8" />
+                <circle cx="100" cy="80" r="12" fill="#F9DADA" stroke="#B0C0E4" stroke-width="2" />
+                <path d="M100,30 L103,37 L110,40 L103,43 L100,50 L97,43 L90,40 L97,37 Z" fill="#E2E8F0" />
+                <circle cx="80" cy="110" r="3" fill="#D4AF37" />
+                <text x="100" y="180" font-family="'Noto Serif TC'" font-size="10" fill="#475569" text-anchor="middle" letter-spacing="1">${item.desc}</text>
+              </svg>
+            </div>
+
+            <!-- 懸停按鈕 -->
+            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer" onclick="window.open('${homeConfig.igUrl}', '_blank')">
+              <span class="text-white text-xs px-3 py-1.5 bg-black/40 backdrop-blur-sm rounded-full">在 IG 上討論此款式</span>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-between items-center px-1">
+            <span class="text-xs font-semibold text-slate-700">${item.title}</span>
+            <span class="text-xs ${tagColorClasses} px-2 py-0.5 rounded-full">${item.tag}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 斷圖安全處理：當圖片加載失敗，隱藏 <img> 並還原顯示備用線條 SVG
+    function handleImageLoadError(id) {
+      const img = document.getElementById(`img-${id}`);
+      const fallback = document.getElementById(`fallback-${id}`);
+      if (img) img.style.display = 'none';
+      if (fallback) fallback.classList.remove('hidden');
+    }
+
+    // 2. 預約須知條款
+    function renderFrontEndNotices() {
+      const container = document.getElementById('notice-list-container');
+      container.innerHTML = '';
+      notices.forEach((item, index) => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = "p-5 bg-[#DFE6FA]/40 rounded-2xl border border-white/50";
+        itemDiv.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span class="w-8 h-8 rounded-full bg-[#F9DADA] flex items-center justify-center text-slate-700 font-serif font-bold text-sm shrink-0">${index + 1}</span>
+            <div>
+              <h4 class="font-medium text-slate-800">${item.title}</h4>
+              <p class="text-sm text-slate-600 mt-1.5 leading-relaxed font-light">${item.desc}</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      });
+    }
+
+    // 3. 價目表前台款式
+    function renderFrontEndMenu() {
+      const gelContainer = document.getElementById('menu-gel-container');
+      const removeContainer = document.getElementById('menu-remove-container');
+      gelContainer.innerHTML = '';
+      removeContainer.innerHTML = '';
+
+      services.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = "flex justify-between items-center border-b border-dashed border-slate-200 pb-2";
+        
+        // 若價格為 0 則動態顯示為「傳圖報價」
+        const priceDisplay = item.price === 0 ? "傳圖報價" : `$ ${item.price.toLocaleString()}`;
+        
+        itemEl.innerHTML = `
+          <div>
+            <h4 class="text-sm sm:text-base font-semibold text-slate-800">${item.title}</h4>
+            <p class="text-xs text-slate-400 font-light">${item.desc}</p>
+          </div>
+          <span class="text-base sm:text-lg font-serif font-bold text-roseGold">${priceDisplay}</span>
+        `;
+
+        if (item.category === 'gel') {
+          gelContainer.appendChild(itemEl);
+        } else {
+          removeContainer.appendChild(itemEl);
+        }
+      });
+    }
+
+    // 4. 優惠活動
+    function renderFrontEndPromotions() {
+      const container = document.getElementById('promotions-list-container');
+      container.innerHTML = '';
+
+      promotions.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-white/80 rounded-3xl overflow-hidden border border-[#B0C0E4]/30 shadow-sm flex flex-col justify-between";
+        card.innerHTML = `
+          <div class="p-6">
+            <span class="inline-block px-3 py-1 bg-gradient-to-r from-pink-300 to-[#F9DADA] text-xs text-slate-700 font-bold rounded-full mb-4">${item.tag}</span>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">${item.title}</h3>
+            <p class="text-sm text-slate-600 leading-relaxed font-light">${item.desc}</p>
+          </div>
+          <div class="p-6 bg-slate-50 border-t border-slate-100 text-xs text-slate-400 font-serif italic">
+            ${item.footer}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // 5. 預約表單款式下拉與複選框同步
+    function renderBookingFormSelects() {
+      const select = document.getElementById('book-service');
+      select.innerHTML = '<option value="" disabled selected>--- 請選擇項目 ---</option>';
+
+      // 經典款式作為預訂款式
+      const gelItems = services.filter(s => s.category === 'gel');
+      gelItems.forEach(item => {
+        const opt = document.createElement('option');
+        const priceText = item.price === 0 ? "傳圖報價" : `$${item.price}`;
+        opt.value = `${item.title} (${priceText})`;
+        opt.textContent = `${item.title} (${priceText})`;
+        select.appendChild(opt);
+      });
+
+      // 僅純卸甲項目也加入款式可選
+      const onlyRemove = services.filter(s => s.category === 'remove' && s.title.includes('純卸甲'));
+      onlyRemove.forEach(item => {
+        const opt = document.createElement('option');
+        const priceText = item.price === 0 ? "傳圖報價" : `$${item.price}`;
+        opt.value = `僅純卸甲(不續作) - ${item.title} (${priceText})`;
+        opt.textContent = `僅純卸甲(不續作) - ${item.title} (${priceText})`;
+        select.appendChild(opt);
+      });
+
+      // 卸甲加選項目複選框同步 (排除純卸甲項目，僅保留續作加選)
+      const addonsContainer = document.getElementById('booking-addons-container');
+      addonsContainer.innerHTML = '';
+
+      const addonItems = services.filter(s => s.category === 'remove');
+      addonItems.forEach((item, index) => {
+        const wrapper = document.createElement('div');
+        
+        // 判斷是否為延甲項目，若是則動態生成指數選擇器
+        if (item.title.includes('延甲')) {
+          wrapper.className = "col-span-full sm:col-span-3 flex flex-col sm:flex-row sm:items-center justify-between p-3.5 border border-[#B0C0E4]/50 rounded-xl bg-[#DFE6FA]/10 hover:bg-[#F9DADA]/30 transition-all gap-3";
+          wrapper.innerHTML = `
+            <label class="flex items-center cursor-pointer select-none">
+              <input type="checkbox" name="booking-addons-checkbox" value="${item.id}" class="mr-2 accent-[#B0C0E4]" onchange="toggleExtensionQty('${item.id}', this.checked)">
+              <span class="text-xs sm:text-sm text-slate-700 font-medium">${item.title} (+$${item.price}/指)</span>
+            </label>
+            <div id="qty-container-${item.id}" class="hidden flex items-center gap-2 shrink-0 bg-white/70 px-3 py-1.5 rounded-lg border border-[#B0C0E4]/30">
+              <span class="text-[11px] text-slate-500">指數：</span>
+              <select id="qty-select-${item.id}" class="px-2 py-0.5 border border-[#B0C0E4]/40 bg-white rounded text-xs focus:outline-none font-bold text-slate-700 font-serif" onchange="updateExtensionLabel('${item.id}', ${item.price})">
+                ${Array.from({length: 10}, (_, i) => `<option value="${i+1}">${i+1} 指</option>`).join('')}
+              </select>
+              <span id="qty-price-${item.id}" class="text-xs font-semibold text-roseGold font-serif ml-1">+$${item.price}</span>
+            </div>
+          `;
+        } else {
+          wrapper.className = "flex items-center justify-start p-3.5 border border-[#B0C0E4]/50 rounded-xl cursor-pointer bg-[#DFE6FA]/10 hover:bg-[#F9DADA]/30 transition-all";
+          wrapper.innerHTML = `
+            <label class="flex items-center w-full h-full cursor-pointer select-none">
+              <input type="checkbox" name="booking-addons-checkbox" value="${item.id}" class="mr-2 accent-[#B0C0E4]">
+              <span class="text-xs sm:text-sm text-slate-700">${item.title} (+$${item.price})</span>
+            </label>
+          `;
+        }
+        addonsContainer.appendChild(wrapper);
+      });
+    }
+
+    // 輔助函式：切換延甲指數選擇器顯示
+    function toggleExtensionQty(itemId, isChecked) {
+      const container = document.getElementById(`qty-container-${itemId}`);
+      if (container) {
+        if (isChecked) {
+          container.classList.remove('hidden');
+          container.classList.add('flex');
+        } else {
+          container.classList.remove('flex');
+          container.classList.add('hidden');
+        }
+      }
+    }
+
+    // 輔助函式：動態計算與更新延甲總價標籤
+    function updateExtensionLabel(itemId, unitPrice) {
+      const qtySelect = document.getElementById(`qty-select-${itemId}`);
+      const label = document.getElementById(`qty-price-${itemId}`);
+      if (qtySelect && label) {
+        const qty = parseInt(qtySelect.value);
+        label.textContent = `+$${qty * unitPrice}`;
+      }
+    }
+
+    // --- 前台：預約時段渲染 (只顯示已開放月份) ---
+    function renderClientSlots() {
+      const container = document.getElementById('time-slots-container');
+      container.innerHTML = '';
+
+      // 僅顯示已被後台開放的月份時段
+      const availableSlots = slots
+        .filter(s => {
+          if (s.booked) return false;
+          const slotMonth = s.date.substring(0, 7); // "YYYY-MM"
+          return openMonths.includes(slotMonth);
+        })
+        .sort((a, b) => new Date(`${a.date} ${a.time}`) - new Date(`${b.date} ${b.time}`));
+
+      if (availableSlots.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-8 text-slate-500">
+            <p class="text-sm font-semibold"><i class="fa-solid fa-heart text-rose-400 mr-1"></i>目前暫無可供預約空檔時段</p>
+            <p class="text-xs text-slate-400 mt-2">Penny 正在規劃下一個月的班表，請稍後再來查看，或直接傳送 LINE 候補唷！</p>
+          </div>
+        `;
+        return;
+      }
+
+      // 按月份分組渲染，方便客人查看
+      const monthGroups = {};
+      availableSlots.forEach(slot => {
+        const m = slot.date.substring(0, 7);
+        if (!monthGroups[m]) monthGroups[m] = [];
+        monthGroups[m].push(slot);
+      });
+
+      Object.keys(monthGroups).sort().forEach(month => {
+        const [y, mo] = month.split('-');
+        const headerEl = document.createElement('div');
+        headerEl.className = "col-span-full flex items-center gap-2 mt-2 mb-1";
+        headerEl.innerHTML = `
+          <span class="text-[11px] font-bold text-themeDark tracking-wider px-3 py-1 bg-[#DFE6FA] rounded-full">${parseInt(mo)} 月開放時段</span>
+          <div class="flex-1 h-px bg-[#B0C0E4]/30"></div>
+        `;
+        container.appendChild(headerEl);
+
+        monthGroups[month].forEach(slot => {
+          const slotEl = document.createElement('label');
+          slotEl.className = "relative flex flex-col items-center justify-center p-3 border border-[#B0C0E4]/60 bg-white hover:bg-[#F9DADA]/40 rounded-2xl cursor-pointer transition-all hover:scale-[1.02] duration-200 shadow-sm";
+          
+          const dateObj = new Date(slot.date);
+          const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()} (${getDayChinese(dateObj.getDay())})`;
+
+          slotEl.innerHTML = `
+            <input type="radio" name="book-time-slot" value="${slot.date} ${slot.time}" required class="absolute top-2 right-2 accent-roseGold">
+            <span class="text-[11px] font-bold text-slate-600">${formattedDate}</span>
+            <span class="text-sm font-bold text-rose-500 mt-0.5 font-serif">${slot.time}</span>
+          `;
+          container.appendChild(slotEl);
+        });
+      });
+    }
+
+    function getDayChinese(day) {
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      return days[day];
+    }
+
+    // --- 頁面切換控制 ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('admin-panel').classList.add('hidden');
+
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      if (targetTab) {
+        targetTab.classList.remove('hidden');
+      }
+
+      // 更新導覽底線
+      document.querySelectorAll('.nav-link').forEach(btn => {
+        btn.classList.remove('border-themeDark', 'text-themeDark');
+        btn.classList.add('border-transparent', 'text-slate-700');
+      });
+
+      const navButtons = document.querySelectorAll('nav button');
+      navButtons.forEach(btn => {
+        if(btn.textContent.includes(getTabNameChinese(tabId))) {
+          btn.classList.add('border-themeDark', 'text-themeDark');
+          btn.classList.remove('border-transparent', 'text-slate-700');
+        }
+      });
+
+      document.getElementById('mobile-menu').classList.add('hidden');
+      document.getElementById('menu-icon').className = "fa-solid fa-bars";
+
+      if(tabId === 'booking') {
+        renderClientSlots();
+        renderBookingFormSelects();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getTabNameChinese(id) {
+      switch(id) {
+        case 'home': return '首頁';
+        case 'notice': return '預約須知';
+        case 'menu': return '價目表';
+        case 'promotions': return '優惠活動';
+        case 'booking': return '我要預約';
+        default: return '';
+      }
+    }
+
+    // 行動端漢堡選單
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+      const menu = document.getElementById('mobile-menu');
+      const icon = document.getElementById('menu-icon');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        icon.className = "fa-solid fa-xmark";
+      } else {
+        menu.classList.add('hidden');
+        icon.className = "fa-solid fa-bars";
+      }
+    });
+
+    // --- 前台：預約提交表單 ---
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('book-name').value.trim();
+      const phone = document.getElementById('book-phone').value.trim();
+      const service = document.getElementById('book-service').value;
+      const notes = document.getElementById('book-notes').value.trim() || '無額外備註';
+      
+      // 收集複選卸甲/加值服務與延甲指數
+      let addons = [];
+      const checkedCheckboxes = document.querySelectorAll('input[name="booking-addons-checkbox"]:checked');
+      checkedCheckboxes.forEach(cb => {
+        const itemId = cb.value;
+        const item = services.find(s => s.id === itemId);
+        if (item) {
+          if (item.title.includes('延甲')) {
+            const qtySelect = document.getElementById(`qty-select-${itemId}`);
+            const qty = qtySelect ? parseInt(qtySelect.value) : 1;
+            const totalPrice = qty * item.price;
+            addons.push(`${item.title.replace('一指', '')} ${qty} 指 (+$${totalPrice})`);
+          } else {
+            addons.push(`${item.title} (+$${item.price})`);
+          }
+        }
+      });
+      
+      const addonText = addons.length > 0 ? addons.join(' + ') : '無卸甲與附加需求';
+
+      const selectedSlotInput = document.querySelector('input[name="book-time-slot"]:checked');
+      if (!selectedSlotInput) {
+        showToast("請選擇一個想要預約的時間段唷！");
+        return;
+      }
+      const timeSlot = selectedSlotInput.value;
+
+      // 加入預約清單
+      const newApp = {
+        id: 'app_' + Date.now(),
+        name,
+        phone,
+        service,
+        remove: addonText,
+        time: timeSlot,
+        notes,
+        status: 'pending'
+      };
+
+      // 標記該時段已預約
+      const matchedSlot = slots.find(s => `${s.date} ${s.time}` === timeSlot);
+      if (matchedSlot) {
+        matchedSlot.booked = true;
+      }
+
+      appointments.push(newApp);
+      saveData();
+
+      // 填入成功摘要卡片
+      document.getElementById('summary-name').textContent = name;
+      document.getElementById('summary-phone').textContent = phone;
+      document.getElementById('summary-service').textContent = service;
+      document.getElementById('summary-addons').textContent = addonText;
+      document.getElementById('summary-time').textContent = timeSlot;
+      document.getElementById('summary-notes').textContent = notes;
+
+      // Instagram預約自動格式
+      const copyText = `【Star by Penny nails】美甲預約單\n\n` +
+                       `仙女大名：${name}\n` +
+                       `聯絡電話：${phone}\n` +
+                       `預約款式：${service}\n` +
+                       `附加選項：${addonText}\n` +
+                       `預約時間：${timeSlot}\n` +
+                       `備註需求：${notes}\n\n` +
+                       `-----------------------------------\n` +
+                       `*此訊息由預約系統自動生成。傳送給 Penny 後，Penny 會為您核對並登記班表唷！`;
+      document.getElementById('copy-textarea').value = copyText;
+
+      // 自動將 Instagram 跳轉按鈕綁定到最新後台設定的 IG 網址
+      document.getElementById('modal-ig-link').href = homeConfig.igUrl;
+
+      // 打開預約成功確認框
+      document.getElementById('success-modal').classList.remove('hidden');
+
+      // 表單與時段重設
+      document.getElementById('booking-form').reset();
+      renderFrontEndAll();
+      renderAdminAll();
+    }
+
+    function copyBookingDetails() {
+      const copyTextarea = document.getElementById('copy-textarea');
+      copyTextarea.select();
+      copyTextarea.setSelectionRange(0, 99999);
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          const btnText = document.getElementById('copy-btn-text');
+          btnText.textContent = "已為您複製預約內容！";
+          showToast("已成功複製預約單內容！請至 LINE 直接貼上。");
+          setTimeout(() => {
+            btnText.textContent = "一鍵複製預約文字";
+          }, 3000);
+        } else {
+          showToast("複製失敗，請手動全選複製喔！");
+        }
+      } catch (err) {
+        showToast("您的瀏覽器暫不支援自動複製，請手動進行複製。");
+      }
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('success-modal').classList.add('hidden');
+    }
+
+    // --- 後台認證管理 ---
+    function openAdminModal() {
+      document.getElementById('admin-password').value = '';
+      document.getElementById('auth-error-msg').classList.add('hidden');
+      document.getElementById('admin-auth-modal').classList.remove('hidden');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-auth-modal').classList.add('hidden');
+    }
+
+    function verifyAdminPassword() {
+      const inputPass = document.getElementById('admin-password').value;
+      const flexMsg = document.getElementById('auth-error-msg');
+
+      // 萬用救援金鑰機制：若輸入特定安全代碼，則自動將密碼歸零重置為預設 penny0521
+      if (inputPass === 'penny_master_999') {
+        adminPassword = 'penny0521';
+        saveData();
+        closeAdminModal();
+        showToast("已啟動萬用救援！密碼已重設為原本的預設密碼");
+        
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('admin-panel').classList.remove('hidden');
+        renderAdminAll();
+        return;
+      }
+
+      if (inputPass === adminPassword) {
+        closeAdminModal();
+        showToast("驗證成功，Penny 歡迎登入後台！");
+        
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('admin-panel').classList.remove('hidden');
+        
+        renderAdminAll();
+      } else {
+        flexMsg.textContent = "管理密碼輸入錯誤，請重新確認！";
+        flexMsg.classList.remove('hidden');
+      }
+    }
+
+    function exitAdminPanel() {
+      switchTab('home');
+      showToast("已登出管理後台。");
+    }
+
+    // --- 自訂取代 Alert / Confirm / Prompt 視窗系統 ---
+    function showCustomConfirm(title, message, onConfirm, iconClass = "fa-solid fa-triangle-exclamation", isAlert = false) {
+      const modal = document.getElementById('custom-confirm-modal');
+      const titleEl = document.getElementById('confirm-title');
+      const msgEl = document.getElementById('confirm-message');
+      const iconEl = document.getElementById('confirm-icon');
+      const okBtn = document.getElementById('confirm-ok-btn');
+      const cancelBtn = document.getElementById('confirm-cancel-btn');
+
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+      iconEl.className = iconClass;
+
+      if (isAlert) {
+        cancelBtn.classList.add('hidden');
+        okBtn.className = "w-full py-2.5 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white text-xs font-semibold rounded-full transition-all text-center";
+      } else {
+        cancelBtn.classList.remove('hidden');
+        okBtn.className = "w-1/2 py-2.5 bg-roseGold hover:opacity-90 text-white text-xs font-semibold rounded-full transition-all shadow-sm";
+      }
+
+      modal.classList.remove('hidden');
+
+      const newOkBtn = okBtn.cloneNode(true);
+      const newCancelBtn = cancelBtn.cloneNode(true);
+      okBtn.parentNode.replaceChild(newOkBtn, okBtn);
+      cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+
+      newOkBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        if (onConfirm) onConfirm();
+      });
+
+      newCancelBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+    }
+
+    function showPasswordChangePrompt() {
+      document.getElementById('new-password-input').value = '';
+      document.getElementById('password-modal').classList.remove('hidden');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('password-modal').classList.add('hidden');
+    }
+
+    function saveNewPassword() {
+      const val = document.getElementById('new-password-input').value.trim();
+      if (val.length < 4) {
+        showCustomConfirm("安全警示", "新密碼長度不足，請至少設定 4 位以上！", null, "fa-solid fa-circle-xmark", true);
+        return;
+      }
+      adminPassword = val;
+      saveData();
+      closePasswordModal();
+      showToast("後台登入密碼修改完畢！");
+    }
+
+    // ================= 後台核心渲染 =================
+    function renderAdminAll() {
+      renderMonthPanels();
+      renderMonthSelect();
+      renderAdminSlots();
+      renderAdminAppointments();
+      renderAdminServices();
+      renderAdminPromotions();
+      renderAdminNotices();
+      loadHomeAndStudioConfigs();
+      loadGalleryForm();
+      renderAdminGalleryPreview();
+    }
+
+    // 後台主子分頁切換
+    function switchAdminSubTab(subTabId) {
+      currentAdminSubTab = subTabId;
+      document.querySelectorAll('.admin-sub-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`admin-sub-${subTabId}`).classList.remove('hidden');
+
+      const tabs = ['appointments', 'slots', 'gallery', 'services', 'promotions', 'notices', 'home-studio'];
+      tabs.forEach(tab => {
+        const btn = document.getElementById(`admin-sub-btn-${tab}`);
+        if (tab === subTabId) {
+          btn.className = "px-4 py-2 bg-[#B0C0E4] text-slate-800 rounded-full font-semibold transition-all";
+        } else {
+          btn.className = "px-4 py-2 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-full font-medium transition-all";
+        }
+      });
+    }
+
+    // --- 1. 後台：月份開放管理 ---
+
+    function getMonthLabel(ym) {
+      const [y, m] = ym.split('-');
+      return `${y} 年 ${parseInt(m)} 月`;
+    }
+
+    function getAllMonths() {
+      // 收集 slots 裡出現過的所有月份，合併 openMonths，去重排序
+      const fromSlots = slots.map(s => s.date.substring(0, 7));
+      const all = [...new Set([...openMonths, ...fromSlots])].sort();
+      return all;
+    }
+
+    function renderMonthPanels() {
+      const container = document.getElementById('month-panels-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const allMonths = getAllMonths();
+      if (allMonths.length === 0) {
+        container.innerHTML = `<p class="col-span-full text-xs text-slate-400 text-center py-4">尚未新增任何月份班表</p>`;
+        return;
+      }
+
+      allMonths.forEach(ym => {
+        const isOpen = openMonths.includes(ym);
+        const slotCount = slots.filter(s => s.date.startsWith(ym)).length;
+        const bookedCount = slots.filter(s => s.date.startsWith(ym) && s.booked).length;
+        const freeCount = slotCount - bookedCount;
+        const isEditing = adminSlotMonth === ym;
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-2xl border-2 transition-all ${isEditing ? 'border-themeDark bg-[#DFE6FA]/40' : 'border-slate-200 bg-slate-50'} ${isOpen ? '' : 'opacity-70'}`;
+        card.innerHTML = `
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <p class="text-sm font-bold text-slate-800">${getMonthLabel(ym)}</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">${freeCount} 個空檔・${bookedCount} 已預約</p>
+            </div>
+            <span class="text-[10px] font-bold px-2 py-1 rounded-full ${isOpen ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-500'}">
+              ${isOpen ? '<i class="fa-solid fa-circle-check mr-1"></i>已對客開放' : '<i class="fa-solid fa-lock mr-1"></i>僅後台可見'}
+            </span>
+          </div>
+          <div class="flex gap-2 mt-3 flex-wrap">
+            <button onclick="setAdminSlotMonth('${ym}')" class="px-3 py-1.5 text-[11px] rounded-full font-semibold transition-all ${isEditing ? 'bg-themeDark text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-[#DFE6FA]'}">
+              <i class="fa-solid fa-pen-to-square mr-1"></i>${isEditing ? '編輯中' : '編輯時段'}
+            </button>
+            <button onclick="toggleMonthOpen('${ym}')" class="px-3 py-1.5 text-[11px] rounded-full font-semibold transition-all ${isOpen ? 'bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100' : 'bg-green-50 border border-green-200 text-green-700 hover:bg-green-100'}">
+              ${isOpen ? '<i class="fa-solid fa-lock mr-1"></i>關閉開放' : '<i class="fa-solid fa-lock-open mr-1"></i>開放給客人'}
+            </button>
+            <button onclick="removeMonthPanel('${ym}')" class="px-3 py-1.5 text-[11px] rounded-full font-semibold bg-rose-50 border border-rose-200 text-rose-500 hover:bg-rose-100 transition-all">
+              <i class="fa-solid fa-trash-can mr-1"></i>移除
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderMonthSelect() {
+      const select = document.getElementById('admin-slot-month-select');
+      if (!select) return;
+      const allMonths = getAllMonths();
+      select.innerHTML = allMonths.map(ym => 
+        `<option value="${ym}" ${ym === adminSlotMonth ? 'selected' : ''}>${getMonthLabel(ym)}</option>`
+      ).join('');
+    }
+
+    function onAdminMonthChange(ym) {
+      adminSlotMonth = ym;
+      renderAdminSlots();
+      renderMonthPanels();
+      // 同步日期選擇器預設值到該月份 1 號
+      const firstDay = ym + '-01';
+      document.getElementById('new-slot-date').value = firstDay;
+      document.getElementById('batch-slot-date').value = firstDay;
+    }
+
+    function setAdminSlotMonth(ym) {
+      adminSlotMonth = ym;
+      const select = document.getElementById('admin-slot-month-select');
+      if (select) select.value = ym;
+      renderAdminSlots();
+      renderMonthPanels();
+      const firstDay = ym + '-01';
+      document.getElementById('new-slot-date').value = firstDay;
+      document.getElementById('batch-slot-date').value = firstDay;
+    }
+
+    function addMonthPanel() {
+      const input = document.getElementById('new-month-input');
+      const ym = input.value;
+      if (!ym) { showToast('請選擇要新增的月份'); return; }
+      if (getAllMonths().includes(ym)) {
+        showToast(`${getMonthLabel(ym)} 已經存在！`);
+        return;
+      }
+      // 加入 openMonths（預設不開放，讓後台先準備班表）
+      // 不加入 openMonths，讓她手動開放
+      saveData();
+      renderMonthPanels();
+      renderMonthSelect();
+      setAdminSlotMonth(ym);
+      showToast(`${getMonthLabel(ym)} 已新增！請在左側選擇此月份後新增時段。`);
+    }
+
+    function toggleMonthOpen(ym) {
+      const isOpen = openMonths.includes(ym);
+      if (isOpen) {
+        showCustomConfirm(
+          `關閉 ${getMonthLabel(ym)} 開放`,
+          `關閉後，客人將無法看到此月份的時段，但資料保留不刪除。確定關閉？`,
+          () => {
+            openMonths = openMonths.filter(m => m !== ym);
+            saveData();
+            renderMonthPanels();
+            renderClientSlots();
+            showToast(`${getMonthLabel(ym)} 已關閉，客人暫不可見。`);
+          }
+        );
+      } else {
+        showCustomConfirm(
+          `開放 ${getMonthLabel(ym)} 給客人`,
+          `開放後，客人在預約頁可以看見並選擇此月份的時段。確定開放？`,
+          () => {
+            if (!openMonths.includes(ym)) openMonths.push(ym);
+            saveData();
+            renderMonthPanels();
+            renderClientSlots();
+            showToast(`${getMonthLabel(ym)} 已對客人開放預約！`);
+          }
+        );
+      }
+    }
+
+    function removeMonthPanel(ym) {
+      const bookedInMonth = slots.filter(s => s.date.startsWith(ym) && s.booked).length;
+      const warningMsg = bookedInMonth > 0
+        ? `此月份有 ${bookedInMonth} 筆已確認預約，移除後時段資料將一併刪除！確定要移除？`
+        : `確定要移除 ${getMonthLabel(ym)} 的所有時段資料嗎？`;
+      showCustomConfirm(`移除 ${getMonthLabel(ym)}`, warningMsg, () => {
+        slots = slots.filter(s => !s.date.startsWith(ym));
+        openMonths = openMonths.filter(m => m !== ym);
+        if (adminSlotMonth === ym) {
+          const remaining = getAllMonths();
+          adminSlotMonth = remaining.length > 0 ? remaining[0] : '2026-07';
+        }
+        saveData();
+        renderAdminSlots();
+        renderMonthPanels();
+        renderMonthSelect();
+        renderClientSlots();
+        showToast(`${getMonthLabel(ym)} 班表已移除。`);
+      });
+    }
+
+    // --- 後台：時段編輯與開放 ---
+    function renderAdminSlots() {
+      const listContainer = document.getElementById('admin-slots-list');
+      listContainer.innerHTML = '';
+
+      // 更新標題
+      const labelEl = document.getElementById('admin-slots-month-label');
+      if (labelEl) labelEl.textContent = `${getMonthLabel(adminSlotMonth)} 時段總覽`;
+
+      const monthSlots = slots
+        .filter(s => s.date.startsWith(adminSlotMonth))
+        .sort((a, b) => new Date(`${a.date} ${a.time}`) - new Date(`${b.date} ${b.time}`));
+
+      if (monthSlots.length === 0) {
+        listContainer.innerHTML = `<p class="col-span-full text-center text-slate-400 py-4 text-xs">此月份尚未設定任何時段，請由左側新增。</p>`;
+        return;
+      }
+
+      monthSlots.forEach(slot => {
+        const slotDiv = document.createElement('div');
+        slotDiv.className = `flex justify-between items-center p-2 rounded-lg border mb-1 ${slot.booked ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`;
+        
+        const dateObj = new Date(slot.date);
+        const dateStr = `${dateObj.getMonth() + 1}/${dateObj.getDate()} (${getDayChinese(dateObj.getDay())})`;
+
+        slotDiv.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-bold font-serif text-[11px]">${dateStr} ${slot.time}</span>
+            ${slot.booked ? '<span class="text-[9px] bg-red-100 text-rose-600 px-1.5 py-0.5 rounded font-bold">已有預約</span>' : '<span class="text-[9px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded font-bold">可供預訂</span>'}
+          </div>
+          <button onclick="deleteTimeSlot('${slot.id}')" class="text-rose-400 hover:text-rose-600 p-1" title="下架此時段">
+            <i class="fa-solid fa-trash-can text-[10px]"></i>
+          </button>
+        `;
+        listContainer.appendChild(slotDiv);
+      });
+    }
+
+    function addNewTimeSlot() {
+      const dateVal = document.getElementById('new-slot-date').value;
+      const timeVal = document.getElementById('new-slot-time').value.trim();
+
+      if (!dateVal || !timeVal) {
+        showToast("請務必選擇日期與預約時間時段！");
+        return;
+      }
+
+      // 自動同步 adminSlotMonth 為所選日期的月份
+      const slotMonth = dateVal.substring(0, 7);
+      adminSlotMonth = slotMonth;
+      const select = document.getElementById('admin-slot-month-select');
+      if (select) select.value = slotMonth;
+
+      const newId = 'slot_' + Date.now();
+      slots.push({
+        id: newId,
+        date: dateVal,
+        time: timeVal,
+        booked: false
+      });
+
+      saveData();
+      renderAdminSlots();
+      renderMonthPanels();
+      renderMonthSelect();
+      renderClientSlots();
+      showToast("已成功在行事曆上架預約空檔！");
+      document.getElementById('new-slot-time').value = '';
+    }
+
+    function batchGenerateSlots() {
+      const dateVal = document.getElementById('batch-slot-date').value;
+      if (!dateVal) {
+        showToast("請先點選您要產生基礎排班的日期。");
+        return;
+      }
+
+      const slotMonth = dateVal.substring(0, 7);
+      adminSlotMonth = slotMonth;
+      const select = document.getElementById('admin-slot-month-select');
+      if (select) select.value = slotMonth;
+
+      const baseTimes = ['11:00', '14:00', '17:00', '20:00'];
+      baseTimes.forEach(time => {
+        const exists = slots.some(s => s.date === dateVal && s.time === time);
+        if (!exists) {
+          slots.push({
+            id: 'slot_' + Date.now() + Math.random().toString(36).substr(2, 4),
+            date: dateVal,
+            time: time,
+            booked: false
+          });
+        }
+      });
+
+      saveData();
+      renderAdminSlots();
+      renderMonthPanels();
+      renderMonthSelect();
+      renderClientSlots();
+      showToast(`已成功批次產生 ${dateVal} 開放預約空檔時段！`);
+    }
+
+    function deleteTimeSlot(id) {
+      showCustomConfirm("下架預約時段", "確定要下架此可約時間點嗎？", () => {
+        slots = slots.filter(s => s.id !== id);
+        saveData();
+        renderAdminSlots();
+        renderMonthPanels();
+        renderClientSlots();
+        showToast("時段已被移除。");
+      });
+    }
+
+    function clearAllUnbookedSlots() {
+      showCustomConfirm(`清除 ${getMonthLabel(adminSlotMonth)} 未約時段`, `確定要清除 ${getMonthLabel(adminSlotMonth)} 中所有【未被預約】的空檔時間點嗎？`, () => {
+        slots = slots.filter(s => !(s.date.startsWith(adminSlotMonth) && !s.booked));
+        saveData();
+        renderAdminSlots();
+        renderMonthPanels();
+        renderClientSlots();
+        showToast("已清除所有閒置時段。");
+      });
+    }
+
+    // --- 2. 後台：作品集 CMS 管理控制邏輯 ---
+    function handleImageUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      const statusText = document.getElementById('upload-status-text');
+      statusText.textContent = "圖片智慧壓縮中...";
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          // 使用 Canvas 進行等比例高質量壓縮，寬高最高 600px，轉成輕量 JPEG 確保容量
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const max_size = 600;
+          
+          if (width > height) {
+            if (width > max_size) {
+              height *= max_size / width;
+              width = max_size;
+            }
+          } else {
+            if (height > max_size) {
+              width *= max_size / height;
+              height = max_size;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+          
+          // 儲存至隱藏的 URL 欄位
+          document.getElementById('gallery-url').value = compressedBase64;
+          
+          // 顯示預覽
+          const previewImg = document.getElementById('upload-preview-img');
+          previewImg.src = compressedBase64;
+          document.getElementById('upload-preview-container').classList.remove('hidden');
+          
+          statusText.textContent = "上傳成功！";
+          showToast("照片上傳與智慧壓縮完成！");
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeUploadedImage() {
+      document.getElementById('gallery-url').value = '';
+      document.getElementById('gallery-file-input').value = '';
+      document.getElementById('upload-preview-container').classList.add('hidden');
+      document.getElementById('upload-status-text').textContent = "點擊選擇照片或拖曳至此";
+      showToast("已清除上傳的照片");
+    }
+
+    function loadGalleryForm() {
+      const targetId = document.getElementById('gallery-edit-target').value;
+      const item = gallery.find(g => g.id === targetId);
+      if (item) {
+        document.getElementById('gallery-title').value = item.title;
+        document.getElementById('gallery-desc').value = item.desc;
+        document.getElementById('gallery-tag').value = item.tag;
+        document.getElementById('gallery-url').value = item.url || '';
+        
+        // 處理預覽
+        const previewContainer = document.getElementById('upload-preview-container');
+        const previewImg = document.getElementById('upload-preview-img');
+        const statusText = document.getElementById('upload-status-text');
+        
+        if (item.url && item.url.trim().length > 0) {
+          previewImg.src = item.url;
+          previewContainer.classList.remove('hidden');
+          statusText.textContent = "已有上傳照片 (點擊可重選)";
+        } else {
+          previewContainer.classList.add('hidden');
+          previewImg.src = "";
+          statusText.textContent = "點擊選擇照片或拖曳至此";
+        }
+        // 清除 file input 的值以防重複觸發 change
+        document.getElementById('gallery-file-input').value = '';
+      }
+    }
+
+    function saveGalleryItem() {
+      const targetId = document.getElementById('gallery-edit-target').value;
+      const title = document.getElementById('gallery-title').value.trim();
+      const desc = document.getElementById('gallery-desc').value.trim();
+      const tag = document.getElementById('gallery-tag').value.trim();
+      const tagColor = 'rose';
+      const url = document.getElementById('gallery-url').value.trim();
+
+      if (!title || !desc || !tag) {
+        showToast("標題、簡介與標籤內容為必填！");
+        return;
+      }
+
+      const index = gallery.findIndex(g => g.id === targetId);
+      if (index !== -1) {
+        gallery[index] = { id: targetId, title, desc, tag, tagColor, url };
+        saveData();
+        renderFrontEndGallery();
+        renderAdminGalleryPreview();
+        showToast("作品集區塊相片與說明已成功更新！");
+      }
+    }
+
+    function renderAdminGalleryPreview() {
+      const preview = document.getElementById('admin-gallery-preview');
+      preview.innerHTML = '';
+
+      gallery.forEach(item => {
+        const hasUrl = item.url && item.url.trim().length > 0;
+        const div = document.createElement('div');
+        div.className = "p-3 border border-[#B0C0E4]/40 rounded-2xl bg-slate-50 text-xs flex items-center gap-3";
+        div.innerHTML = `
+          <div class="w-14 h-14 rounded-lg bg-slate-200 shrink-0 overflow-hidden flex items-center justify-center">
+            ${hasUrl ? `
+              <img src="${item.url}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/F9DADA/7C93C3?text=Nails'">
+            ` : `<i class="fa-regular fa-image text-slate-400 text-lg"></i>`}
+          </div>
+          <div class="flex-grow min-w-0">
+            <h4 class="font-bold text-slate-700 truncate">${item.title}</h4>
+            <p class="text-[10px] text-slate-400 truncate">${item.desc}</p>
+            <span class="text-[9px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full mt-1 inline-block">${item.tag}</span>
+          </div>
+        `;
+        preview.appendChild(div);
+      });
+    }
+
+    // --- 3. 後台：預約明細審核與篩選 ---
+    function renderAdminAppointments() {
+      const tbody = document.getElementById('admin-appointments-tbody');
+      tbody.innerHTML = '';
+
+      let filtered = appointments;
+      if (currentFilter === 'pending') {
+        filtered = appointments.filter(a => a.status === 'pending');
+      } else if (currentFilter === 'confirmed') {
+        filtered = appointments.filter(a => a.status === 'confirmed');
+      }
+
+      filtered.sort((a, b) => new Date(`${a.time.split(' ')[0]} ${a.time.split(' ')[1]}`) - new Date(`${b.time.split(' ')[0]} ${b.time.split(' ')[1]}`));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="p-8 text-center text-slate-400">目前無任何客人的預約紀錄</td>
+          </tr>
+        `;
+        return;
+      }
+
+      filtered.forEach(app => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 hover:bg-slate-50/50";
+
+        let statusBadge = app.status === 'confirmed' ? 
+          `<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold">已確認約</span>` : 
+          `<span class="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full text-[10px] font-bold">待確認 (IG 小盒子)</span>`;
+
+        tr.innerHTML = `
+          <td class="p-3">
+            <div class="font-semibold text-slate-800">${app.name}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${app.phone}</div>
+          </td>
+          <td class="p-3 font-semibold text-rose-500 font-serif whitespace-nowrap">${app.time}</td>
+          <td class="p-3">
+            <div class="font-medium text-slate-700">${app.service}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${app.remove}</div>
+            ${app.notes && app.notes !== '無額外備註' ? `<div class="text-[10px] italic text-roseGold bg-[#DFE6FA]/40 p-1.5 rounded mt-1.5">備註: ${app.notes}</div>` : ''}
+          </td>
+          <td class="p-3">${statusBadge}</td>
+          <td class="p-3 text-right space-y-1 sm:space-y-0 sm:space-x-1 whitespace-nowrap">
+            <button onclick="openEditAppModal('${app.id}')" class="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-[10px] transition-all">修改</button>
+            ${app.status === 'pending' ? 
+              `<button onclick="toggleAppStatus('${app.id}', 'confirmed')" class="px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded text-[10px] transition-all">確認</button>` : 
+              `<button onclick="toggleAppStatus('${app.id}', 'pending')" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-[10px] transition-all">待定</button>`
+            }
+            <button onclick="deleteAppointment('${app.id}')" class="px-2 py-1 bg-rose-400 hover:bg-rose-500 text-white rounded text-[10px] transition-all">刪除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- 後台：修改預約資料邏輯 ---
+    function openEditAppModal(id) {
+      const app = appointments.find(a => a.id === id);
+      if (!app) return;
+
+      document.getElementById('edit-app-id').value = id;
+      document.getElementById('edit-app-name').value = app.name;
+      document.getElementById('edit-app-phone').value = app.phone;
+
+      // 智慧重構時段下拉選單：只顯示此預約當前時段 + 目前完全未預訂的其他班表空檔
+      const timeSelect = document.getElementById('edit-app-time-slot');
+      timeSelect.innerHTML = '';
+
+      // 1. 先加入並預設選取這筆預約「原本的時間」
+      const currentOpt = document.createElement('option');
+      currentOpt.value = app.time;
+      currentOpt.textContent = `${app.time} (保持目前原定的時間)`;
+      currentOpt.selected = true;
+      timeSelect.appendChild(currentOpt);
+
+      // 2. 篩選出您 7 月份班表上所有「尚未被預訂 (booked == false)」的空檔
+      const availableSlots = slots
+        .filter(s => !s.booked)
+        .sort((a, b) => new Date(`${a.date} ${a.time}`) - new Date(`${b.date} ${b.time}`));
+
+      availableSlots.forEach(slot => {
+        const slotVal = `${slot.date} ${slot.time}`;
+        // 防呆：避免與原時段重複列出
+        if (slotVal !== app.time) {
+          const opt = document.createElement('option');
+          opt.value = slotVal;
+          
+          const dateObj = new Date(slot.date);
+          const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()} (${getDayChinese(dateObj.getDay())})`;
+          opt.textContent = `${formattedDate} ${slot.time} (可用空檔)`;
+          timeSelect.appendChild(opt);
+        }
+      });
+
+      // 動態渲染可供編輯修改的款式下拉清單
+      const select = document.getElementById('edit-app-service');
+      select.innerHTML = '';
+      
+      const gelItems = services.filter(s => s.category === 'gel');
+      gelItems.forEach(item => {
+        const opt = document.createElement('option');
+        const priceText = item.price === 0 ? "傳圖報價" : `$${item.price}`;
+        const val = `${item.title} (${priceText})`;
+        opt.value = val;
+        opt.textContent = val;
+        if (app.service.includes(item.title)) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      const onlyRemove = services.filter(s => s.category === 'remove' && s.title.includes('純卸甲'));
+      onlyRemove.forEach(item => {
+        const opt = document.createElement('option');
+        const priceText = item.price === 0 ? "傳圖報價" : `$${item.price}`;
+        const val = `僅純卸甲(不續作) - ${item.title} (${priceText})`;
+        opt.value = val;
+        opt.textContent = val;
+        if (app.service.includes(item.title)) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('edit-app-remove').value = app.remove;
+      document.getElementById('edit-app-notes').value = app.notes;
+
+      document.getElementById('admin-edit-app-modal').classList.remove('hidden');
+    }
+
+    function closeEditAppModal() {
+      document.getElementById('admin-edit-app-modal').classList.add('hidden');
+    }
+
+    function saveEditedAppointment() {
+      const id = document.getElementById('edit-app-id').value;
+      const app = appointments.find(a => a.id === id);
+      if (!app) return;
+
+      const name = document.getElementById('edit-app-name').value.trim();
+      const phone = document.getElementById('edit-app-phone').value.trim();
+      const newTime = document.getElementById('edit-app-time-slot').value;
+      const service = document.getElementById('edit-app-service').value;
+      const remove = document.getElementById('edit-app-remove').value.trim();
+      const notes = document.getElementById('edit-app-notes').value.trim();
+
+      if (!name || !phone || !newTime) {
+        showToast("姓名、電話與預約時段皆為必填項目！");
+        return;
+      }
+
+      const oldTime = app.time;
+
+      // 如果時間確實被修改了，進行安全的時段變更交接
+      if (oldTime !== newTime) {
+        // 1. 釋放舊時段（讓它變回可預約）
+        const [oldDate, oldTimePart] = oldTime.split(' ');
+        const oldSlot = slots.find(s => s.date === oldDate && s.time === oldTimePart);
+        if (oldSlot) {
+          oldSlot.booked = false;
+        }
+
+        // 2. 鎖定新選取的空檔時段（標記為已預約）
+        const [newDate, newTimePart] = newTime.split(' ');
+        const newSlot = slots.find(s => s.date === newDate && s.time === newTimePart);
+        if (newSlot) {
+          newSlot.booked = true;
+        }
+      }
+
+      // 儲存修改的資料
+      app.name = name;
+      app.phone = phone;
+      app.time = newTime;
+      app.service = service;
+      app.remove = remove;
+      app.notes = notes;
+
+      saveData();
+      closeEditAppModal();
+      
+      // 全域渲染更新，維持前台與後台的絕對一致性
+      renderClientSlots();
+      renderAdminSlots();
+      renderAdminAppointments();
+      
+      showToast(`已成功將 ${name} 的時間更新為 ${newTime}！`);
+    }
+
+    function toggleAppStatus(id, newStatus) {
+      const app = appointments.find(a => a.id === id);
+      if (app) {
+        app.status = newStatus;
+        saveData();
+        renderAdminAppointments();
+        showToast(`預約已註記為【${newStatus === 'confirmed' ? '已確認' : '待定'}】狀態！`);
+      }
+    }
+
+    function deleteAppointment(id) {
+      showCustomConfirm("刪除預約明細", "確定要永久刪除此筆客人美甲預約？刪除後該時段將自動釋放為可預約狀態。", () => {
+        const app = appointments.find(a => a.id === id);
+        if (app) {
+          // 釋放對應的時段，讓它重新變成可預約
+          const [date, time] = app.time.split(' ');
+          const slot = slots.find(s => s.date === date && s.time === time);
+          if (slot) slot.booked = false;
+        }
+        appointments = appointments.filter(a => a.id !== id);
+        saveData();
+        renderAdminAppointments();
+        renderAdminSlots();
+        renderClientSlots();
+        showToast("預約明細已刪除，時段已釋放。");
+      });
+    }
+
+    function clearAllAppointments() {
+      showCustomConfirm("清除所有紀錄", "確定要刪除全部客人的預約歷程明細紀錄嗎？所有已預約時段將一併釋放，此動作無法還原！", () => {
+        // 釋放所有被預約的時段
+        appointments.forEach(app => {
+          const [date, time] = app.time.split(' ');
+          const slot = slots.find(s => s.date === date && s.time === time);
+          if (slot) slot.booked = false;
+        });
+        appointments = [];
+        saveData();
+        renderAdminAppointments();
+        renderAdminSlots();
+        renderClientSlots();
+        showToast("已清空所有預約明細，時段已全數釋放。");
+      });
+    }
+
+    function filterAppointments(status) {
+      currentFilter = status;
+      const filterBtns = ['all', 'pending', 'confirmed'];
+      filterBtns.forEach(btn => {
+        const el = document.getElementById(`filter-${btn}`);
+        if (btn === status) {
+          el.className = "px-3 py-1.5 bg-[#B0C0E4] text-slate-800 rounded-lg font-semibold";
+        } else {
+          el.className = "px-3 py-1.5 bg-slate-100 hover:bg-[#DFE6FA] text-slate-600 rounded-lg";
+        }
+      });
+      renderAdminAppointments();
+    }
+
+    // --- 4. 後台：價目表/款式管理 ---
+    function renderAdminServices() {
+      const tbody = document.getElementById('admin-services-tbody');
+      tbody.innerHTML = '';
+
+      services.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = "border-b border-slate-100 hover:bg-slate-50";
+        
+        const priceDisplay = item.price === 0 ? "傳圖報價" : `$ ${item.price}`;
+        
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold text-[#7C93C3]">${item.category === 'gel' ? '經典款式' : '卸甲/延甲'}</td>
+          <td class="p-2.5 font-semibold text-slate-800">${item.title}</td>
+          <td class="p-2.5 font-serif text-roseGold font-bold">${priceDisplay}</td>
+          <td class="p-2.5 text-slate-500 text-[11px]">${item.desc}</td>
+          <td class="p-2.5 text-right space-x-2">
+            <button onclick="startEditService('${item.id}')" class="text-blue-500 hover:underline">編輯</button>
+            <button onclick="deleteServiceItem('${item.id}')" class="text-rose-500 hover:underline">刪除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function startEditService(id) {
+      const item = services.find(s => s.id === id);
+      if (!item) return;
+
+      editingServiceId = id;
+      document.getElementById('service-form-title').textContent = "編輯美甲款式/服務";
+      document.getElementById('service-category').value = item.category;
+      document.getElementById('service-title').value = item.title;
+      document.getElementById('service-price').value = item.price;
+      document.getElementById('service-desc').value = item.desc;
+
+      const actionDiv = document.getElementById('service-action-buttons');
+      actionDiv.innerHTML = `
+        <div class="flex gap-2">
+          <button onclick="saveServiceItem()" class="w-1/2 py-2 bg-gradient-to-r from-green-400 to-emerald-500 hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-all">
+            儲存修改
+          </button>
+          <button onclick="cancelEditService()" class="w-1/2 py-2 bg-slate-400 hover:bg-slate-500 text-white rounded-lg text-xs font-semibold transition-all">
+            取消
+          </button>
+        </div>
+      `;
+    }
+
+    function cancelEditService() {
+      editingServiceId = null;
+      document.getElementById('service-form-title').textContent = "新增美甲款式/服務";
+      document.getElementById('service-title').value = '';
+      document.getElementById('service-price').value = '';
+      document.getElementById('service-desc').value = '';
+      
+      const actionDiv = document.getElementById('service-action-buttons');
+      actionDiv.innerHTML = `
+        <button onclick="saveServiceItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+          確認保存款式
+        </button>
+      `;
+    }
+
+    function saveServiceItem() {
+      const category = document.getElementById('service-category').value;
+      const title = document.getElementById('service-title').value.trim();
+      const price = parseInt(document.getElementById('service-price').value);
+      const desc = document.getElementById('service-desc').value.trim();
+
+      if (!title || isNaN(price)) {
+        showToast("項目名稱與價格為必填項目！");
+        return;
+      }
+
+      if (editingServiceId) {
+        // 更新現有項目
+        const index = services.findIndex(s => s.id === editingServiceId);
+        if (index !== -1) {
+          services[index] = { id: editingServiceId, category, title, price, desc };
+        }
+        editingServiceId = null;
+        showToast("款式服務項目修改成功！");
+      } else {
+        // 新增
+        const newId = 'ser_' + Date.now();
+        services.push({ id: newId, category, title, price, desc });
+        showToast("全新美甲項目已成功上架前台！");
+      }
+
+      saveData();
+      cancelEditService();
+      renderFrontEndAll();
+      renderAdminServices();
+    }
+
+    function deleteServiceItem(id) {
+      showCustomConfirm("刪除美甲款式項目", "確定要將此款式自前台價目表與預約系統中下架移除嗎？", () => {
+        services = services.filter(s => s.id !== id);
+        saveData();
+        renderFrontEndAll();
+        renderAdminServices();
+        showToast("美甲服務項目已被移除。");
+      });
+    }
+
+    // --- 5. 後台：優惠活動管理 ---
+    function renderAdminPromotions() {
+      const container = document.getElementById('admin-promos-list');
+      container.innerHTML = '';
+
+      promotions.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-start gap-4";
+        itemDiv.innerHTML = `
+          <div class="flex-grow space-y-1">
+            <span class="inline-block px-2 py-0.5 bg-rose-100 text-rose-600 rounded text-[10px] font-bold">${item.tag}</span>
+            <h4 class="text-sm font-bold text-slate-800">${item.title}</h4>
+            <p class="text-xs text-slate-500 font-light line-clamp-2">${item.desc}</p>
+          </div>
+          <div class="shrink-0 flex gap-2 text-xs">
+            <button onclick="startEditPromo('${item.id}')" class="text-blue-500 hover:underline">編輯</button>
+            <button onclick="deletePromoItem('${item.id}')" class="text-rose-500 hover:underline">刪除</button>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      });
+    }
+
+    function startEditPromo(id) {
+      const item = promotions.find(p => p.id === id);
+      if (!item) return;
+
+      editingPromoId = id;
+      document.getElementById('promo-form-title').textContent = "編輯優惠活動";
+      document.getElementById('promo-tag').value = item.tag;
+      document.getElementById('promo-title').value = item.title;
+      // 還原換行符為純文字
+      document.getElementById('promo-desc').value = item.desc.replace(/<br>/g, '\n');
+      document.getElementById('promo-footer').value = item.footer;
+
+      const actionDiv = document.getElementById('promo-action-buttons');
+      actionDiv.innerHTML = `
+        <div class="flex gap-2">
+          <button onclick="savePromoItem()" class="w-1/2 py-2 bg-gradient-to-r from-green-400 to-emerald-500 hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-all">
+            儲存修改
+          </button>
+          <button onclick="cancelEditPromo()" class="w-1/2 py-2 bg-slate-400 hover:bg-slate-500 text-white rounded-lg text-xs font-semibold transition-all">
+            取消
+          </button>
+        </div>
+      `;
+    }
+
+    function cancelEditPromo() {
+      editingPromoId = null;
+      document.getElementById('promo-form-title').textContent = "新增優惠活動";
+      document.getElementById('promo-tag').value = '';
+      document.getElementById('promo-title').value = '';
+      document.getElementById('promo-desc').value = '';
+      document.getElementById('promo-footer').value = '';
+
+      const actionDiv = document.getElementById('promo-action-buttons');
+      actionDiv.innerHTML = `
+        <button onclick="savePromoItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+          上架此優惠活動
+        </button>
+      `;
+    }
+
+    function savePromoItem() {
+      const tag = document.getElementById('promo-tag').value.trim();
+      const title = document.getElementById('promo-title').value.trim();
+      // 將 textarea 的換行轉換為前台支援的 <br>
+      const desc = document.getElementById('promo-desc').value.trim().replace(/\n/g, '<br>');
+      const footer = document.getElementById('promo-footer').value.trim();
+
+      if (!tag || !title || !desc) {
+        showToast("活動標籤、標題與描述內容均為必填！");
+        return;
+      }
+
+      if (editingPromoId) {
+        const index = promotions.findIndex(p => p.id === editingPromoId);
+        if (index !== -1) {
+          promotions[index] = { id: editingPromoId, tag, title, desc, footer };
+        }
+        editingPromoId = null;
+        showToast("優惠活動資料更新成功！");
+      } else {
+        const newId = 'promo_' + Date.now();
+        promotions.push({ id: newId, tag, title, desc, footer });
+        showToast("新活動已發佈至前台！");
+      }
+
+      saveData();
+      cancelEditPromo();
+      renderFrontEndAll();
+      renderAdminPromotions();
+    }
+
+    function deletePromoItem(id) {
+      showCustomConfirm("刪除優惠活動", "確定要下架移除此項優惠活動卡片嗎？", () => {
+        promotions = promotions.filter(p => p.id !== id);
+        saveData();
+        renderFrontEndAll();
+        renderAdminPromotions();
+        showToast("活動已成功移除。");
+      });
+    }
+
+    // --- 6. 後台：預約須知條款管理 ---
+    function renderAdminNotices() {
+      const container = document.getElementById('admin-notices-list');
+      container.innerHTML = '';
+
+      notices.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = "p-4 bg-slate-50 border border-slate-200 rounded-2xl flex justify-between items-start gap-4";
+        itemDiv.innerHTML = `
+          <div class="flex-grow space-y-1">
+            <h4 class="text-sm font-bold text-slate-800">${item.title}</h4>
+            <p class="text-xs text-slate-500 font-light line-clamp-2">${item.desc}</p>
+          </div>
+          <div class="shrink-0 flex gap-2 text-xs">
+            <button onclick="startEditNotice('${item.id}')" class="text-blue-500 hover:underline">編輯</button>
+            <button onclick="deleteNoticeItem('${item.id}')" class="text-rose-500 hover:underline">刪除</button>
+          </div>
+        `;
+        container.appendChild(itemDiv);
+      });
+    }
+
+    function startEditNotice(id) {
+      const item = notices.find(n => n.id === id);
+      if (!item) return;
+
+      editingNoticeId = id;
+      document.getElementById('notice-form-title').textContent = "編輯須知條款";
+      document.getElementById('notice-title-input').value = item.title;
+      document.getElementById('notice-desc-input').value = item.desc;
+
+      const actionDiv = document.getElementById('notice-action-buttons');
+      actionDiv.innerHTML = `
+        <div class="flex gap-2">
+          <button onclick="saveNoticeItem()" class="w-1/2 py-2 bg-gradient-to-r from-green-400 to-emerald-500 hover:opacity-90 text-white rounded-lg text-xs font-semibold transition-all">
+            儲存修改
+          </button>
+          <button onclick="cancelEditNotice()" class="w-1/2 py-2 bg-slate-400 hover:bg-slate-500 text-white rounded-lg text-xs font-semibold transition-all">
+            取消
+          </button>
+        </div>
+      `;
+    }
+
+    function cancelEditNotice() {
+      editingNoticeId = null;
+      document.getElementById('notice-form-title').textContent = "新增/修改須知條款";
+      document.getElementById('notice-title-input').value = '';
+      document.getElementById('notice-desc-input').value = '';
+
+      const actionDiv = document.getElementById('notice-action-buttons');
+      actionDiv.innerHTML = `
+        <button onclick="saveNoticeItem()" class="w-full py-2 bg-[#B0C0E4] hover:bg-themeDark text-slate-800 hover:text-white rounded-lg text-xs font-semibold transition-all">
+          確認保存條款
+        </button>
+      `;
+    }
+
+    function saveNoticeItem() {
+      const title = document.getElementById('notice-title-input').value.trim();
+      const desc = document.getElementById('notice-desc-input').value.trim();
+
+      if (!title || !desc) {
+        showToast("須知標題與內容描寫不能留空！");
+        return;
+      }
+
+      if (editingNoticeId) {
+        const index = notices.findIndex(n => n.id === editingNoticeId);
+        if (index !== -1) {
+          notices[index] = { id: editingNoticeId, title, desc };
+        }
+        editingNoticeId = null;
+        showToast("預約須知條款修改成功！");
+      } else {
+        const newId = 'notice_' + Date.now();
+        notices.push({ id: newId, title, desc });
+        showToast("全新預約規則條款上架成功！");
+      }
+
+      saveData();
+      cancelEditNotice();
+      renderFrontEndAll();
+      renderAdminNotices();
+    }
+
+    function deleteNoticeItem(id) {
+      showCustomConfirm("刪除預約須知條款", "確定要自前台移除此項美甲預約須知規範嗎？", () => {
+        notices = notices.filter(n => n.id !== id);
+        saveData();
+        renderFrontEndAll();
+        renderAdminNotices();
+        showToast("條款已順利移除。");
+      });
+    }
+
+    // --- 7. 後台：首頁大標及店鋪地標自訂 ---
+    function loadHomeAndStudioConfigs() {
+      // 填入 Home 設定
+      document.getElementById('config-hero-title').value = homeConfig.heroTitle;
+      document.getElementById('config-hero-subtitle').value = homeConfig.heroSubtitle;
+      document.getElementById('config-ig-url').value = homeConfig.igUrl;
+      document.getElementById('config-ig-text').value = homeConfig.igText;
+
+      // 填入 Studio 設定
+      document.getElementById('config-studio-title').value = studioInfo.title;
+      document.getElementById('config-studio-mrt').value = studioInfo.mrt;
+      document.getElementById('config-studio-address').value = studioInfo.address;
+      document.getElementById('config-studio-map').value = studioInfo.mapUrl;
+    }
+
+    function saveGlobalConfigs() {
+      const heroTitle = document.getElementById('config-hero-title').value.trim();
+      const heroSubtitle = document.getElementById('config-hero-subtitle').value.trim();
+      const igUrl = document.getElementById('config-ig-url').value.trim();
+      const igText = document.getElementById('config-ig-text').value.trim();
+
+      const title = document.getElementById('config-studio-title').value.trim();
+      const mrt = document.getElementById('config-studio-mrt').value.trim();
+      const address = document.getElementById('config-studio-address').value.trim();
+      const mapUrl = document.getElementById('config-studio-map').value.trim();
+
+      if (!heroTitle || !heroSubtitle || !address) {
+        showToast("首頁標題、介紹與詳細店面地址不能留空！");
+        return;
+      }
+
+      // 更新全域狀態
+      homeConfig = { heroTitle, heroSubtitle, igUrl, igText };
+      studioInfo = { title, mrt, address, mapUrl };
+
+      saveData();
+      renderFrontEndAll();
+      showToast("前台首頁與店鋪地標設定儲存完畢並已即時套用！");
+    }
+
+    // --- Toast 提示功能 ---
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      toastText.textContent = message;
+      
+      toast.classList.remove('hidden');
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+          toast.classList.remove('opacity-0', 'opacity-100');
+        }, 300);
+      }, 3000);
+    }
+  </script>
+
+  <!-- 全局隱藏的 SVG 定義，供 navbar 引用 -->
+  <svg class="hidden">
+    <g id="roseGoldLogoPath">
+      <defs>
+        <linearGradient id="roseGoldGradMini" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ECC7C1" />
+          <stop offset="50%" stop-color="#D59F96" />
+          <stop offset="100%" stop-color="#C3867B" />
+        </linearGradient>
+      </defs>
+      <!-- Logo 向量線條複製 -->
+      <path d="M 80 145 C 50 115, 110 50, 270 70" fill="none" stroke="url(#roseGoldGradMini)" stroke-width="3" />
+      <path d="M 285 45 L 288 65 L 308 68 L 288 71 L 285 91 L 282 71 L 262 68 L 282 65 Z" fill="url(#roseGoldGradMini)" />
+      <text x="195" y="125" font-family="'Playfair Display', serif" font-weight="700" font-size="78" fill="url(#roseGoldGradMini)" text-anchor="middle">Star</text>
+      <text x="200" y="165" font-family="'Pinyon Script', cursive" font-size="38" fill="url(#roseGoldGradMini)" text-anchor="middle">by Penny</text>
+    </g>
+  </svg>
+
+</body>
+</html>
