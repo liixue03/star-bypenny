@@ -1,4 +1,3 @@
-[index.html](https://github.com/user-attachments/files/29474678/index.html)
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -804,6 +803,28 @@
             </div>
           </div>
 
+        <div class="bg-white rounded-3xl p-6 border border-[#B0C0E4]/30 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-800 pb-3 border-b border-slate-100">頁尾文字自訂</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">頁尾 Logo 大字</label>
+              <input type="text" id="config-footer-logo" placeholder="Star" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 font-bold mb-1">頁尾 Logo 副標</label>
+              <input type="text" id="config-footer-logo-sub" placeholder="by Penny nails" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs text-slate-600 font-bold mb-1">頁尾介紹文字</label>
+              <input type="text" id="config-footer-desc" placeholder="大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。" class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-xs text-slate-600 font-bold mb-1">版權文字</label>
+              <input type="text" id="config-footer-copyright" placeholder="© 2026 Star by Penny nails. All rights reserved." class="w-full px-3 py-2 border border-[#B0C0E4]/50 rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
           <div class="pt-6 border-t border-slate-100 mt-6 flex justify-end">
             <button onclick="saveGlobalConfigs()" class="px-6 py-2.5 bg-gradient-to-r from-themeDark to-roseGold text-white rounded-full text-xs font-semibold shadow-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-floppy-disk mr-1"></i> 儲存所有首頁與店鋪自訂設定
@@ -994,12 +1015,12 @@
 
       <!-- Logo -->
       <div class="flex flex-col items-center gap-0.5">
-        <span class="italic leading-none text-[#7C93C3]" style="font-family:'Playfair Display',Georgia,serif; font-size:2rem;">Star</span>
-        <span class="font-light text-slate-500 tracking-[0.22em]" style="font-family:'Playfair Display',Georgia,serif; font-size:11px;">by Penny nails</span>
+        <span id="footer-logo-main" class="italic leading-none text-[#7C93C3]" style="font-family:'Playfair Display',Georgia,serif; font-size:2rem;">Star</span>
+        <span id="footer-logo-sub" class="font-light text-slate-500 tracking-[0.22em]" style="font-family:'Playfair Display',Georgia,serif; font-size:11px;">by Penny nails</span>
       </div>
 
       <!-- 介紹文字 -->
-      <p class="text-[13px] text-slate-500 font-light leading-relaxed">
+      <p id="footer-desc" class="text-[13px] text-slate-500 font-light leading-relaxed">
         大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。
       </p>
 
@@ -1022,7 +1043,7 @@
 
       <!-- 版權 + 後台按鈕 -->
       <div class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-8 text-[11px] text-slate-400">
-        <span>&copy; 2026 Star by Penny nails. All rights reserved.</span>
+        <span id="footer-copyright">&copy; 2026 Star by Penny nails. All rights reserved.</span>
         <button onclick="openAdminModal()" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-[#B0C0E4]/50 bg-white/70 text-slate-500 hover:text-slate-700 hover:bg-white transition-all text-[11px] shadow-sm">
           <i class="fa-solid fa-lock text-[9px]"></i> 管理員後台
         </button>
@@ -1171,7 +1192,11 @@
       heroTitle: '讓每個指尖都閃耀如星辰',
       heroSubtitle: '位於大安區的精緻美甲殿堂。精心施作極致前保養、透光凝膠、與溫柔持久的高質感美甲設計。',
       igUrl: 'https://www.instagram.com/star.bypenny_nails?igsh=MXdpejZsYWl1YTV4OA==',
-      igText: '@star.bypenny_nails'
+      igText: '@star.bypenny_nails',
+      footerLogo: 'Star',
+      footerLogoSub: 'by Penny nails',
+      footerDesc: '大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。',
+      footerCopyright: '© 2026 Star by Penny nails. All rights reserved.'
     };
 
     // 預設測試客人預約名單
@@ -1296,6 +1321,10 @@
       // 頁尾
       document.getElementById('footer-ig-btn').href = homeConfig.igUrl;
       document.getElementById('footer-mrt-display').innerHTML = `<i class="fa-solid fa-train text-slate-400 text-[13px]"></i> ${studioInfo.mrt}`;
+      document.getElementById('footer-logo-main').textContent = homeConfig.footerLogo || 'Star';
+      document.getElementById('footer-logo-sub').textContent = homeConfig.footerLogoSub || 'by Penny nails';
+      document.getElementById('footer-desc').textContent = homeConfig.footerDesc || '大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。';
+      document.getElementById('footer-copyright').textContent = homeConfig.footerCopyright || '© 2026 Star by Penny nails. All rights reserved.';
 
       // 店面地址地標卡片
       const card = document.getElementById('studio-info-card-container');
@@ -2896,6 +2925,10 @@
       document.getElementById('config-hero-subtitle').value = homeConfig.heroSubtitle;
       document.getElementById('config-ig-url').value = homeConfig.igUrl;
       document.getElementById('config-ig-text').value = homeConfig.igText;
+      document.getElementById('config-footer-logo').value = homeConfig.footerLogo || 'Star';
+      document.getElementById('config-footer-logo-sub').value = homeConfig.footerLogoSub || 'by Penny nails';
+      document.getElementById('config-footer-desc').value = homeConfig.footerDesc || '大安區精緻美甲殿堂。提供極致手部前保養、透光凝膠與奢華藝術。';
+      document.getElementById('config-footer-copyright').value = homeConfig.footerCopyright || '© 2026 Star by Penny nails. All rights reserved.';
 
       // 填入 Studio 設定
       document.getElementById('config-studio-title').value = studioInfo.title;
@@ -2909,6 +2942,10 @@
       const heroSubtitle = document.getElementById('config-hero-subtitle').value.trim();
       const igUrl = document.getElementById('config-ig-url').value.trim();
       const igText = document.getElementById('config-ig-text').value.trim();
+      const footerLogo = document.getElementById('config-footer-logo').value.trim();
+      const footerLogoSub = document.getElementById('config-footer-logo-sub').value.trim();
+      const footerDesc = document.getElementById('config-footer-desc').value.trim();
+      const footerCopyright = document.getElementById('config-footer-copyright').value.trim();
 
       const title = document.getElementById('config-studio-title').value.trim();
       const mrt = document.getElementById('config-studio-mrt').value.trim();
@@ -2920,8 +2957,7 @@
         return;
       }
 
-      // 更新全域狀態
-      homeConfig = { heroTitle, heroSubtitle, igUrl, igText };
+      homeConfig = { heroTitle, heroSubtitle, igUrl, igText, footerLogo, footerLogoSub, footerDesc, footerCopyright };
       studioInfo = { title, mrt, address, mapUrl };
 
       saveData();
